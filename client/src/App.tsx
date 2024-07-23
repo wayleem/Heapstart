@@ -5,24 +5,28 @@ import { persistor, store } from "./store";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Contact from "./pages/Contact";
+import Registration from "./components/Registration";
+import Login from "./components/Login";
 // Import other pages as needed
 
 function App() {
-  return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="/contact" element={<Contact />} />
-              {/* Add other routes here */}
-            </Route>
-          </Routes>
-        </Router>
-      </PersistGate>
-    </Provider>
-  );
+	return (
+		<Provider store={store}>
+			<PersistGate loading={null} persistor={persistor}>
+				<Router>
+					<Routes>
+						<Route path="/" element={<Layout />}>
+							<Route index element={<Home />} />
+							<Route path="/contact" element={<Contact />} />
+							<Route path="/register" element={<Registration />} />
+							<Route path="/login" element={<Login />} />
+							{/* Add other routes here */}
+						</Route>
+					</Routes>
+				</Router>
+			</PersistGate>
+		</Provider>
+	);
 }
 
 export default App;
