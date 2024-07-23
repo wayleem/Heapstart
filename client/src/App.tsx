@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import Contact from "./pages/Contact";
 import Registration from "./components/Registration";
 import Login from "./components/Login";
+import Profile from "./pages/Profile";
 // Import other pages as needed
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
 							<Route path="/contact" element={<Contact />} />
 							<Route path="/register" element={<Registration />} />
 							<Route path="/login" element={<Login />} />
+							<Route path="/profile" element={<Profile />} />
 							{/* Add other routes here */}
 						</Route>
 					</Routes>
