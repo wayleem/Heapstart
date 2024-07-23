@@ -1,26 +1,35 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAppSelector, useAppDispatch } from "../store";
+import { selectIsAuthenticated, clearUser } from "../store/slices/userSlice";
 
 interface SidebarProps {
 	closeSidebar: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
+	const isAuthenticated = useAppSelector(selectIsAuthenticated);
 	const [isCartExpanded, setIsCartExpanded] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 
 	// Placeholder cart items
 	const cartItems = Array.from({ length: 25 }, (_, i) => `Item ${i + 1}`);
-
 	const itemsPerPage = 10;
 	const totalPages = Math.ceil(cartItems.length / itemsPerPage);
-
 	const displayedItems = cartItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
 	const toggleCart = () => {
 		setIsCartExpanded(!isCartExpanded);
 		setCurrentPage(1); // Reset to first page when toggling
+	};
+
+	const handleLogout = () => {
+		dispatch(clearUser());
+		closeSidebar();
+		navigate("/"); // Redirect to home page after logout
 	};
 
 	return (
@@ -77,18 +86,35 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
 						)}
 					</motion.div>
 				</motion.div>
-				<Link to="/contact" className="text-primary hover:text-neutral text-3xl">
+				<Link to="/contact" onClick={closeSidebar} className="text-primary hover:text-neutral text-3xl">
 					Contact
 				</Link>
-				<Link to="/faq" className="text-primary hover:text-neutral text-3xl">
+				<Link to="/faq" onClick={closeSidebar} className="text-primary hover:text-neutral text-3xl">
 					FAQ
 				</Link>
-				<Link to="/register" onClick={closeSidebar} className="text-primary hover:text-neutral text-2xl">
-					Register
-				</Link>
-				<Link to="/login" onClick={closeSidebar} className="text-primary hover:text-neutral text-2xl">
-					Login
-				</Link>
+				{isAuthenticated ? (
+					<>
+						<Link to="/profile" onClick={closeSidebar} className="text-primary hover:text-neutral text-2xl">
+							Profile
+						</Link>
+						<button onClick={handleLogout} className="text-primary hover:text-neutral text-2xl text-left">
+							Logout
+						</button>
+					</>
+				) : (
+					<>
+						<Link
+							to="/register"
+							onClick={closeSidebar}
+							className="text-primary hover:text-neutral text-2xl"
+						>
+							Register
+						</Link>
+						<Link to="/login" onClick={closeSidebar} className="text-primary hover:text-neutral text-2xl">
+							Login
+						</Link>
+					</>
+				)}
 			</nav>
 		</div>
 	);

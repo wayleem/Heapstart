@@ -13,7 +13,7 @@ const userSlice = createSlice({
 	name: "user",
 	initialState,
 	reducers: {
-		setUser: (state, action: PayloadAction<{ id: string; email: string; profile: Profile }>) => {
+		setUser: (state, action: PayloadAction<{ id: string; email: string; profile: UserState["profile"] }>) => {
 			state.id = action.payload.id;
 			state.email = action.payload.email;
 			state.profile = action.payload.profile;
