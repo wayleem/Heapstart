@@ -8,7 +8,6 @@ const ProductSchema = new Schema<IProduct>({
   supplier_cost: { type: Number, required: true, min: 0 },
   supplier_link: { type: String, required: true, trim: true },
   category: { type: String, trim: true },
-  stockQuantity: { type: Number, required: true, min: 0, default: 0 },
   imageUrl: { type: String, trim: true },
   createdAt: { type: Date, default: Date.now, immutable: true },
   updatedAt: { type: Date, default: Date.now },

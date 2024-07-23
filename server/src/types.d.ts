@@ -71,7 +71,6 @@ declare global {
     supplier_cost: number;
     supplier_link: string;
     category?: string;
-    stockQuantity: number;
     imageUrl?: string;
     createdAt: Date;
     updatedAt: Date;
