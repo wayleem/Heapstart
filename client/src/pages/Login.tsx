@@ -22,7 +22,7 @@ const Login: React.FC = () => {
 		e.preventDefault();
 		setIsLoading(true);
 		try {
-			const response = await axios.post("http://localhost:3001/user/login", formData);
+			const response = await axios.post("http://localhost:3001/auth/login", formData);
 			dispatch(
 				setUser({
 					id: response.data.userId,

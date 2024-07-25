@@ -28,7 +28,7 @@ const Registration: React.FC = () => {
 
 		setIsLoading(true);
 		try {
-			const response = await axios.post("http://localhost:3001/user/register", {
+			const response = await axios.post("http://localhost:3001/auth/register", {
 				email: formData.email,
 				password: formData.password,
 				profile: {
