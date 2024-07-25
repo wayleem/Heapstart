@@ -35,16 +35,18 @@ export enum PaymentErrors {
 	PAYMENT_DECLINED = "PAYMENT_DECLINED",
 }
 
-export interface ErrorResponse {
-	type: UserErrors | ProductErrors | OrderErrors | PaymentErrors;
-	message: string;
-	details?: any;
+export type ErrorType = UserErrors | ProductErrors | OrderErrors | PaymentErrors;
+
+export class ErrorResponse extends Error {
+	constructor(
+		public type: ErrorType,
+		message: string,
+		public details?: any,
+	) {
+		super(message);
+	}
 }
 
-export const createErrorResponse = (
-	type: UserErrors | ProductErrors | OrderErrors | PaymentErrors,
-	message: string,
-	details?: any,
-): ErrorResponse => {
-	return { type, message, details };
+export const createErrorResponse = (type: ErrorType, message: string, details?: any): ErrorResponse => {
+	return new ErrorResponse(type, message, details);
 };

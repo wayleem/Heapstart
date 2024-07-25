@@ -1,13 +1,25 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Model, Document, Types } from "mongoose";
 import bcrypt from "bcrypt";
 
-const UserSchema = new Schema<IUser, UserModel>(
+export interface IUser extends Document {
+	email: string;
+	passwordHash: string;
+	isAdmin: boolean;
+	createdAt: Date;
+	updatedAt: Date;
+	isActive: boolean;
+	profile: Profile;
+	orderHistory: Types.ObjectId[];
+	lastLogin?: Date;
+	tokens: Tokens;
+	comparePassword(candidatePassword: string): Promise<boolean>;
+}
+
+const UserSchema = new Schema<IUser>(
 	{
 		email: { type: String, required: true, unique: true, trim: true, lowercase: true },
 		passwordHash: { type: String, required: true },
 		isAdmin: { type: Boolean, default: false },
-		createdAt: { type: Date, default: Date.now, immutable: true },
-		updatedAt: { type: Date, default: Date.now },
 		isActive: { type: Boolean, default: true },
 		profile: {
 			firstName: { type: String, required: true, trim: true },
@@ -30,9 +42,7 @@ const UserSchema = new Schema<IUser, UserModel>(
 			verificationToken: { type: String },
 		},
 	},
-	{
-		timestamps: true,
-	},
+	{ timestamps: true },
 );
 
 UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
@@ -48,6 +58,6 @@ UserSchema.pre("save", async function (next) {
 
 UserSchema.index({ email: 1 });
 
-const UserModel = model<IUser, UserModel>("User", UserSchema);
+const User: Model<IUser> = model<IUser>("User", UserSchema);
 
-export default UserModel;
+export default User;
