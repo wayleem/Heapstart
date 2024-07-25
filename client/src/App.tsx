@@ -12,6 +12,7 @@ import PasswordReset from "./pages/PasswordReset";
 import Store from "./pages/Store";
 import Faq from "./pages/Faq";
 import Checkout from "./pages/Checkout";
+import AdminLogin from "./pages/AdminLogin";
 // Import other pages as needed
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
 							<Route path="/store" element={<Store />} />
 							<Route path="/faq" element={<Faq />} />
 							<Route path="/checkout" element={<Checkout />} />
+							<Route path="/admin" element={<AdminLogin />} />
 							{/* Add other routes here */}
 						</Route>
 					</Routes>
