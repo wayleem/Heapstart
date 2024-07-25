@@ -25,6 +25,20 @@ declare global {
 		lastLogin?: Date;
 	}
 
+	interface Admin {
+		id: string;
+		username: string;
+		name: string;
+		role: "super" | "manager" | "support";
+	}
+
+	interface AdminState {
+		admin: Admin | null;
+		isAuthenticated: boolean;
+		status: "idle" | "loading" | "succeeded" | "failed";
+		error: string | null;
+	}
+
 	interface Product {
 		_id: string;
 		name: string;
@@ -67,6 +81,7 @@ declare global {
 		cart: CartState;
 		user: UserState;
 		products: ProductsState;
+		admin: AdminState;
 	}
 }
 

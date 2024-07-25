@@ -5,11 +5,13 @@ import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
 import cartReducer from "./slices/cartSlice";
 import userReducer from "./slices/userSlice";
 import productsReducer from "./slices/productsSlice";
+import adminReducer from "./slices/adminSlice";
 
 const rootReducer = combineReducers({
 	cart: cartReducer,
 	user: userReducer,
 	products: productsReducer,
+	admin: adminReducer,
 });
 
 const persistConfig: PersistConfig<RootState> = {

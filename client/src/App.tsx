@@ -1,7 +1,10 @@
+import React, { lazy } from "react";
 import { Provider } from "react-redux";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "./store";
+import { useSelector } from "react-redux";
+import { selectIsAdminAuthenticated } from "./store/slices/adminSlice";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Contact from "./pages/Contact";
@@ -13,7 +16,20 @@ import Store from "./pages/Store";
 import Faq from "./pages/Faq";
 import Checkout from "./pages/Checkout";
 import AdminLogin from "./pages/AdminLogin";
-// Import other pages as needed
+
+// Lazy load the admin dashboard
+const AdminDashboard = lazy(() => import("./pages/Dashboard"));
+
+// Create a wrapper component for protected admin routes
+const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
+	const isAdminAuthenticated = useSelector(selectIsAdminAuthenticated);
+
+	if (!isAdminAuthenticated) {
+		return <Navigate to="/admin/login" replace />;
+	}
+
+	return <>{children}</>;
+};
 
 function App() {
 	return (
@@ -31,8 +47,16 @@ function App() {
 							<Route path="/store" element={<Store />} />
 							<Route path="/faq" element={<Faq />} />
 							<Route path="/checkout" element={<Checkout />} />
-							<Route path="/admin" element={<AdminLogin />} />
-							{/* Add other routes here */}
+							{/* Admin routes */}
+							<Route path="/admin/login" element={<AdminLogin />} />
+							<Route
+								path="/admin/dashboard"
+								element={
+									<ProtectedAdminRoute>
+										<AdminDashboard />
+									</ProtectedAdminRoute>
+								}
+							/>
 						</Route>
 					</Routes>
 				</Router>
