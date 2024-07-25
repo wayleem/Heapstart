@@ -1,31 +1,55 @@
 /** @type {import('tailwindcss').Config} */
+const { fontFamily } = require("tailwindcss/defaultTheme");
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [require("daisyui")],
-  daisyui: {
-    themes: [
-      {
-        mytheme: {
-          "primary": "#4A5568",    // A dark blue-gray, reminiscent of code editor backgrounds
-          "secondary": "#718096",  // A lighter blue-gray for secondary elements
-          "accent": "#48BB78",     // A muted green, inspired by terminal text
-          "neutral": "#2D3748",    // A very dark blue-gray for contrast
-          "base-100": "#EDF2F7",   // A light gray-blue for main background
-          "base-200": "#E2E8F0",   // A slightly darker gray-blue for layering
-          "base-300": "#CBD5E0",   // An even darker gray-blue for more contrast
-          "info": "#4299E1",       // A bright blue for informational elements
-          "success": "#68D391",    // A bright green for success states
-          "warning": "#F6E05E",    // A muted yellow for warnings
-          "error": "#FC8181",      // A soft red for errors
-        },
-      },
-    ],
-  },
-}
-
+	content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+	theme: {
+		extend: {
+			keyframes: {
+				underline: {
+					"0%": { width: "0" },
+					"100%": { width: "100%" },
+				},
+			},
+			animation: {
+				underline: "underline 0.2s ease",
+			},
+			fontFamily: {
+				sans: ["Inter", ...fontFamily.sans],
+				heading: ["Space Grotesk", ...fontFamily.sans],
+			},
+			fontSize: {
+				h1: "3rem", // 48px
+				h2: "2.25rem", // 36px
+				h3: "1.5rem", // 24px
+				body: "1rem", // 16px
+				small: "0.875rem", // 14px
+			},
+			spacing: {
+				18: "4.5rem", // 72px
+				22: "5.5rem", // 88px
+			},
+		},
+	},
+	plugins: [require("daisyui")],
+	daisyui: {
+		themes: [
+			{
+				mytheme: {
+					primary: "#000000", // Black from the logo
+					secondary: "#FF9494", // Red from the logo
+					accent: "#414141", // Dark gray (kept from previous config)
+					neutral: "#EEEEEE", // Very light gray (kept from previous config)
+					"base-100": "#FFFFFF", // White background
+					"base-200": "#F5F5F5", // Lighter gray (kept from previous config)
+					"base-300": "#E0E0E0", // Light gray (kept from previous config)
+					info: "#9E9E9E", // Medium light gray (kept from previous config)
+					success: "#616161", // Medium dark gray (kept from previous config)
+					warning: "#424242", // Dark gray (kept from previous config)
+					error: "#FF5757", // Using the red from the logo for error state
+					background: "#FFFFFF", // White background
+					text: "#000000", // Black text color
+				},
+			},
+		],
+	},
+};
