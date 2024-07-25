@@ -60,6 +60,7 @@ declare global {
 		profile: Profile | null;
 		status: "idle" | "loading" | "succeeded" | "failed";
 		error: string | null;
+		accessToken: string | null;
 	}
 
 	interface RootState {
