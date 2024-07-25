@@ -16,7 +16,7 @@ const PasswordReset: React.FC = () => {
 		setError(null);
 
 		try {
-			await axios.post("http://localhost:3001/user/check-email", { email });
+			await axios.post("http://localhost:3001/api/auth/check-email", { email });
 			setMessage("If an account with this email exists, a password reset link will be sent shortly.");
 		} catch (err) {
 			if (axios.isAxiosError(err) && err.response) {
