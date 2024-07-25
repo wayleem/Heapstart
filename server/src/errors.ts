@@ -7,4 +7,44 @@ export enum UserErrors {
 	LOGIN_ERROR = "LOGIN_ERROR",
 	UNAUTHORIZED = "UNAUTHORIZED",
 	SERVER_ERROR = "SERVER_ERROR",
+	TOKEN_EXPIRED = "TOKEN_EXPIRED",
+	REFRESH_TOKEN_INVALID = "REFRESH_TOKEN_INVALID",
+	PASSWORD_RESET_ERROR = "PASSWORD_RESET_ERROR",
+	EMAIL_SEND_ERROR = "EMAIL_SEND_ERROR",
 }
+
+export enum ProductErrors {
+	PRODUCT_NOT_FOUND = "PRODUCT_NOT_FOUND",
+	PRODUCT_CREATION_ERROR = "PRODUCT_CREATION_ERROR",
+	PRODUCT_UPDATE_ERROR = "PRODUCT_UPDATE_ERROR",
+	PRODUCT_DELETION_ERROR = "PRODUCT_DELETION_ERROR",
+	INVALID_PRODUCT_DATA = "INVALID_PRODUCT_DATA",
+}
+
+export enum OrderErrors {
+	ORDER_NOT_FOUND = "ORDER_NOT_FOUND",
+	ORDER_CREATION_ERROR = "ORDER_CREATION_ERROR",
+	ORDER_UPDATE_ERROR = "ORDER_UPDATE_ERROR",
+	INVALID_ORDER_DATA = "INVALID_ORDER_DATA",
+	INSUFFICIENT_STOCK = "INSUFFICIENT_STOCK",
+}
+
+export enum PaymentErrors {
+	PAYMENT_PROCESSING_ERROR = "PAYMENT_PROCESSING_ERROR",
+	INVALID_PAYMENT_METHOD = "INVALID_PAYMENT_METHOD",
+	PAYMENT_DECLINED = "PAYMENT_DECLINED",
+}
+
+export interface ErrorResponse {
+	type: UserErrors | ProductErrors | OrderErrors | PaymentErrors;
+	message: string;
+	details?: any;
+}
+
+export const createErrorResponse = (
+	type: UserErrors | ProductErrors | OrderErrors | PaymentErrors,
+	message: string,
+	details?: any,
+): ErrorResponse => {
+	return { type, message, details };
+};
