@@ -59,9 +59,10 @@ router.post("/login", validateLogin, async (req, res) => {
 		await user.save();
 
 		res.status(200).json({
-			token,
+			token, // Ensure this field is present
 			userId: user._id,
 			email: user.email,
+			profile: user.profile || null, // Include profile if needed
 			message: "User Logged In Successfully",
 		});
 	} catch (err) {
