@@ -24,9 +24,9 @@ declare global {
 	}
 
 	interface IUser {
-		_id: Types.ObjectId;
 		email: string;
 		passwordHash: string;
+		isAdmin: boolean;
 		createdAt: Date;
 		updatedAt: Date;
 		isActive: boolean;
@@ -35,6 +35,12 @@ declare global {
 		lastLogin?: Date;
 		tokens: Tokens;
 	}
+
+	interface IUserMethods {
+		comparePassword(candidatePassword: string): Promise<boolean>;
+	}
+
+	type UserModel = Model<IUser, {}, IUserMethods>;
 
 	interface ProductInOrder {
 		productId: Types.ObjectId;
@@ -78,9 +84,18 @@ declare global {
 
 	namespace NodeJS {
 		interface ProcessEnv {
-			DB_URL: string;
-			DB_NAME: string;
+			MONGODB_URL: string;
+			MONGODB_NAME: string;
 			JWT_SECRET: string;
+			EMAIL_USER: string;
+			EMAIL_PASS: string;
+			EMAIL_HOST: string;
+			EMAIL_PORT: string;
+		}
+	}
+	namespace Express {
+		interface Request {
+			userId?: string;
 		}
 	}
 }
