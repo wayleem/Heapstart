@@ -4,49 +4,49 @@ import { useAppSelector } from "../store";
 import { selectUser } from "../store/slices/userSlice";
 
 const Profile: React.FC = () => {
-	const navigate = useNavigate();
-	const user = useAppSelector(selectUser);
+  const navigate = useNavigate();
+  const user = useAppSelector(selectUser);
 
-	if (!user.isAuthenticated) {
-		// Redirect to login if not authenticated
-		navigate("/login");
-		return null;
-	}
+  if (!user.isAuthenticated) {
+    // Redirect to login if not authenticated
+    navigate("/login");
+    return null;
+  }
 
-	return (
-		<div className="container mx-auto mt-10 p-5">
-			<h1 className="text-h2 font-heading font-bold mb-5">Profile</h1>
-			<div className="bg-base-100 shadow-md rounded px-8 pt-6 pb-8 mb-4">
-				<div className="mb-4">
-					<label className="block text-text text-sm font-bold mb-2">Email</label>
-					<p className="text-text">{user.email}</p>
-				</div>
-				{user.profile && (
-					<>
-						<div className="mb-4">
-							<label className="block text-text text-sm font-bold mb-2">Name</label>
-							<p className="text-text">{`${user.profile.firstName} ${user.profile.lastName}`}</p>
-						</div>
-						<div className="mb-4">
-							<label className="block text-text text-sm font-bold mb-2">Phone</label>
-							<p className="text-text">{user.profile.phone || "Not provided"}</p>
-						</div>
-						<div className="mb-4">
-							<label className="block text-text text-sm font-bold mb-2">Address</label>
-							<p className="text-text">
-								{user.profile.address.street}
-								<br />
-								{user.profile.address.city}, {user.profile.address.state}{" "}
-								{user.profile.address.postalCode}
-								<br />
-								{user.profile.address.country}
-							</p>
-						</div>
-					</>
-				)}
-			</div>
-		</div>
-	);
+  return (
+    <div className="container mx-auto mt-10 p-5">
+      <h1 className="text-h2 font-heading font-bold mb-5">Profile</h1>
+      <div className="bg-base-100 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div className="mb-4">
+          <label className="block text-text text-sm font-bold mb-2">Email</label>
+          <p className="text-text">{user.email}</p>
+        </div>
+        {user.profile && (
+          <>
+            <div className="mb-4">
+              <label className="block text-text text-sm font-bold mb-2">Name</label>
+              <p className="text-text">{`${user.profile.firstName} ${user.profile.lastName}`}</p>
+            </div>
+            <div className="mb-4">
+              <label className="block text-text text-sm font-bold mb-2">Phone</label>
+              <p className="text-text">{user.profile.phone || "Not provided"}</p>
+            </div>
+            <div className="mb-4">
+              <label className="block text-text text-sm font-bold mb-2">Address</label>
+              <p className="text-text">
+                {user.profile.address.street}
+                <br />
+                {user.profile.address.city}, {user.profile.address.state}{" "}
+                {user.profile.address.postalCode}
+                <br />
+                {user.profile.address.country}
+              </p>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default Profile;
