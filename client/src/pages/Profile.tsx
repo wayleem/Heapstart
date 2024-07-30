@@ -1,17 +1,36 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../store";
-import { selectUser } from "../store/slices/userSlice";
+import { useAppSelector, useAppDispatch } from "../store";
+import { selectUser, setUser } from "../store/slices/userSlice";
+import { api } from "../hooks/ApiHooks"
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const user = useAppSelector(selectUser);
+  const dispatch = useAppDispatch();
+
+  const fetchUserProfile = async (token: string) => {
+    try {
+      const response = await api.get(`/api/users/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      dispatch(setUser({ profile: response.data }));
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (user.isAuthenticated && !user.profile && user.accessToken) {
+      fetchUserProfile(user.accessToken);
+    }
+  }, [user.isAuthenticated, user.profile, user.accessToken]);
 
   if (!user.isAuthenticated) {
-    // Redirect to login if not authenticated
     navigate("/login");
     return null;
   }
+
 
   return (
     <div className="container mx-auto mt-10 p-5">
@@ -21,28 +40,31 @@ const Profile: React.FC = () => {
           <label className="block text-text text-sm font-bold mb-2">Email</label>
           <p className="text-text">{user.email}</p>
         </div>
-        {user.profile && (
+        {user.profile ? (
           <>
             <div className="mb-4">
               <label className="block text-text text-sm font-bold mb-2">Name</label>
-              <p className="text-text">{`${user.profile.firstName} ${user.profile.lastName}`}</p>
+              <p className="text-text">{`${user.profile.firstName || ''} ${user.profile.lastName || ''}`}</p>
             </div>
             <div className="mb-4">
               <label className="block text-text text-sm font-bold mb-2">Phone</label>
               <p className="text-text">{user.profile.phone || "Not provided"}</p>
             </div>
-            <div className="mb-4">
-              <label className="block text-text text-sm font-bold mb-2">Address</label>
-              <p className="text-text">
-                {user.profile.address.street}
-                <br />
-                {user.profile.address.city}, {user.profile.address.state}{" "}
-                {user.profile.address.postalCode}
-                <br />
-                {user.profile.address.country}
-              </p>
-            </div>
+            {user.profile.address ? (
+              <div className="mb-4">
+                <label className="block text-text text-sm font-bold mb-2">Address</label>
+                <p className="text-text">
+                  {user.profile.address.street}<br />
+                  {user.profile.address.city}, {user.profile.address.state} {user.profile.address.postalCode}<br />
+                  {user.profile.address.country}
+                </p>
+              </div>
+            ) : (
+              <p>No address information available</p>
+            )}
           </>
+        ) : (
+          <p>Loading profile information...</p>
         )}
       </div>
     </div>

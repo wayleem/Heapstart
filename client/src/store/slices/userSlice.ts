@@ -14,27 +14,13 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser: (
-      state,
-      action: PayloadAction<Partial<{ id: string; email: string; accessToken: string; profile: Profile | null }>>
-    ) => {
-      if (action.payload.id) state.id = action.payload.id;
-      if (action.payload.email) state.email = action.payload.email;
-      if (action.payload.accessToken) state.accessToken = action.payload.accessToken;
-      if (action.payload.profile) state.profile = action.payload.profile;
-      state.isAuthenticated = true;
-      state.status = "succeeded";
+    setUser: (state, action: PayloadAction<Partial<UserState>>) => {
+      return { ...state, ...action.payload, isAuthenticated: true, status: 'succeeded' };
     },
-    clearUser: (state) => {
-      state.id = null;
-      state.email = null;
-      state.profile = null;
-      state.isAuthenticated = false;
-      state.status = "idle";
-    },
+    clearUser: () => initialState,
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
-      state.status = "failed";
+      state.status = 'failed';
     },
   },
 });

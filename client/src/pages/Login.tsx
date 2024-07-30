@@ -19,19 +19,36 @@ const Login: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const fetchUserProfile = async (token: string) => {
+    try {
+      const response = await api.get(`/api/users/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("Profile data:", response.data); // Add this log
+      dispatch(setUser(response.data)); // Dispatch the entire user object
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       const response = await api.post("/api/auth/login", formData);
+      console.log("Login response:", response.data);
+
       dispatch(
         setUser({
           id: response.data.userId,
           email: response.data.email,
           accessToken: response.data.token,
-          profile: response.data.profile || null,
-        }),
+        })
       );
+
+      // Always fetch the profile after login
+      await fetchUserProfile(response.data.token);
+
       setTimeout(() => {
         setIsLoading(false);
         navigate("/");
