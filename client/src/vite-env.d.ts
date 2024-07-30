@@ -1,3 +1,10 @@
 /// <reference types="vite/client" />
 
-VITE_API_BASE_URL = 'http://localhost:3001'
+interface ImportMetaEnv {
+  readonly VITE_API_BASE_URL: string
+  // Add other environment variables here
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
