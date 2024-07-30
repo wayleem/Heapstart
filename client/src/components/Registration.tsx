@@ -131,7 +131,23 @@ const Registration: React.FC = () => {
         },
       });
 
-      dispatch(setUser({ id: response.data.userId, email: formData.email, accessToken: response.data.token }));
+      dispatch(setUser({
+        id: response.data.userId,
+        email: formData.email,
+        accessToken: response.data.token,
+        profile: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+          address: {
+            street: formData.street,
+            city: formData.city,
+            state: formData.state,
+            postalCode: formData.postalCode,
+            country: formData.country,
+          }
+        }
+      }));
       // Redirect to home page or dashboard
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {

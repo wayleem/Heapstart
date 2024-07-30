@@ -22,7 +22,12 @@ const Login: React.FC = () => {
 
     try {
       const response = await api.post('/user/login', formData);
-      dispatch(setUser({ id: response.data.userId, accessToken: response.data.token }));
+      dispatch(setUser({
+        id: response.data.userId,
+        email: response.data.email, // Assuming the API returns the email
+        accessToken: response.data.token,
+        profile: response.data.profile // Assuming the API returns the profile
+      }));
       // Redirect to home page or dashboard
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
