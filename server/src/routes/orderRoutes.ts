@@ -4,7 +4,7 @@
 
 import express from "express";
 import { createOrder, getOrder, updateOrderStatus, getUserOrders } from "../controllers/orderController";
-import { authenticateJWT, isAdmin } from "../middleware/auth";
+import { authenticateJWT } from "../middleware/auth";
 
 const router = express.Router();
 
@@ -13,7 +13,6 @@ router.get("/user", authenticateJWT, getUserOrders);
 router.get("/:id", authenticateJWT, getOrder);
 
 // Admin only routes
-router.use(isAdmin);
 
 router.put("/:id/status", updateOrderStatus);
 

@@ -22,48 +22,48 @@ const AdminDashboard = lazy(() => import("./pages/Dashboard"));
 
 // Create a wrapper component for protected admin routes
 const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAdminAuthenticated = useSelector(selectIsAdminAuthenticated);
+	const isAdminAuthenticated = useSelector(selectIsAdminAuthenticated);
 
-  if (!isAdminAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
-  }
+	if (!isAdminAuthenticated) {
+		return <Navigate to="/admin/login" replace />;
+	}
 
-  return <>{children}</>;
+	return <>{children}</>;
 };
 
 function App() {
-  console.log("API Base URL:", import.meta.env.VITE_API_BASE_URL);
-  return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/register" element={<Registration />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/reset-password" element={<PasswordReset />} />
-              <Route path="/store" element={<Store />} />
-              <Route path="/faq" element={<Faq />} />
-              <Route path="/checkout" element={<Checkout />} />
-              {/* Admin routes */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <ProtectedAdminRoute>
-                    <AdminDashboard />
-                  </ProtectedAdminRoute>
-                }
-              />
-            </Route>
-          </Routes>
-        </Router>
-      </PersistGate>
-    </Provider>
-  );
+	console.log("API Base URL:", import.meta.env.VITE_API_BASE_URL);
+	return (
+		<Provider store={store}>
+			<PersistGate loading={null} persistor={persistor}>
+				<Router>
+					<Routes>
+						<Route path="/" element={<Layout />}>
+							<Route index element={<Home />} />
+							<Route path="/contact" element={<Contact />} />
+							<Route path="/register" element={<Registration />} />
+							<Route path="/login" element={<Login />} />
+							<Route path="/profile" element={<Profile />} />
+							<Route path="/reset-password" element={<PasswordReset />} />
+							<Route path="/store" element={<Store />} />
+							<Route path="/faq" element={<Faq />} />
+							<Route path="/checkout" element={<Checkout />} />
+							{/* Admin routes */}
+							<Route path="/admin/login" element={<AdminLogin />} />
+							<Route
+								path="/admin/dashboard"
+								element={
+									<ProtectedAdminRoute>
+										<AdminDashboard />
+									</ProtectedAdminRoute>
+								}
+							/>
+						</Route>
+					</Routes>
+				</Router>
+			</PersistGate>
+		</Provider>
+	);
 }
 
 export default App;

@@ -1,28 +1,22 @@
 import express from "express";
 import {
-  createProduct,
-  getProduct,
-  updateProduct,
-  deactivateProduct,
-  getAllProducts,
-  uploadProductImages,
+	getAllProducts,
+	getProduct,
+	createProduct,
+	updateProduct,
+	deactivateProduct,
 } from "../controllers/productController";
-import { authenticateJWT, isAdmin } from "../middleware/auth";
-import multer from "multer";
+import { authenticateJWT } from "../middleware/auth";
 
 const router = express.Router();
 
-const upload = multer({ storage: multer.memoryStorage() });
-
+// Public routes
 router.get("/", getAllProducts);
 router.get("/:id", getProduct);
 
-// Protected routes
-router.use(authenticateJWT, isAdmin);
-
-router.post("/", createProduct);
-router.put("/:id", updateProduct);
-router.delete("/:id", deactivateProduct);
-router.post("/:id/images", upload.array("images", 5), uploadProductImages);
+// Admin routes
+router.post("/", authenticateJWT, createProduct);
+router.put("/:id", authenticateJWT, updateProduct);
+router.delete("/:id", authenticateJWT, deactivateProduct);
 
 export { router as productRouter };
