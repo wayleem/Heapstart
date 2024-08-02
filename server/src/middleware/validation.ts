@@ -47,3 +47,8 @@ export const validateUserUpdate = [
 		next();
 	},
 ];
+
+export const validateCart = [
+	body("cart").isObject().withMessage("Cart must be an object"),
+	body("cart.*").isInt({ min: 1 }).withMessage("Cart item quantities must be positive integers"),
+];

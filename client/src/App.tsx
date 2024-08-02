@@ -1,8 +1,6 @@
 import React, { lazy, useEffect } from "react";
-import { Provider } from "react-redux";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { PersistGate } from "redux-persist/integration/react";
-import { persistor, store, useAppDispatch, useAppSelector } from "./store";
+import { useAppDispatch, useAppSelector } from "./store";
 import { useSelector } from "react-redux";
 import { selectIsAdminAuthenticated } from "./store/slices/adminSlice";
 import Layout from "./components/Layout";
@@ -42,36 +40,33 @@ function App() {
 			dispatch(fetchCart());
 		}
 	}, [dispatch, isAuthenticated]);
+
 	return (
-		<Provider store={store}>
-			<PersistGate loading={null} persistor={persistor}>
-				<Router>
-					<Routes>
-						<Route path="/" element={<Layout />}>
-							<Route index element={<Home />} />
-							<Route path="/contact" element={<Contact />} />
-							<Route path="/register" element={<Registration />} />
-							<Route path="/login" element={<Login />} />
-							<Route path="/profile" element={<Profile />} />
-							<Route path="/reset-password" element={<PasswordReset />} />
-							<Route path="/store" element={<Store />} />
-							<Route path="/faq" element={<Faq />} />
-							<Route path="/checkout" element={<Checkout />} />
-							{/* Admin routes */}
-							<Route path="/admin/login" element={<AdminLogin />} />
-							<Route
-								path="/admin/dashboard"
-								element={
-									<ProtectedAdminRoute>
-										<AdminDashboard />
-									</ProtectedAdminRoute>
-								}
-							/>
-						</Route>
-					</Routes>
-				</Router>
-			</PersistGate>
-		</Provider>
+		<Router>
+			<Routes>
+				<Route path="/" element={<Layout />}>
+					<Route index element={<Home />} />
+					<Route path="/contact" element={<Contact />} />
+					<Route path="/register" element={<Registration />} />
+					<Route path="/login" element={<Login />} />
+					<Route path="/profile" element={<Profile />} />
+					<Route path="/reset-password" element={<PasswordReset />} />
+					<Route path="/store" element={<Store />} />
+					<Route path="/faq" element={<Faq />} />
+					<Route path="/checkout" element={<Checkout />} />
+					{/* Admin routes */}
+					<Route path="/admin/login" element={<AdminLogin />} />
+					<Route
+						path="/admin/dashboard"
+						element={
+							<ProtectedAdminRoute>
+								<AdminDashboard />
+							</ProtectedAdminRoute>
+						}
+					/>
+				</Route>
+			</Routes>
+		</Router>
 	);
 }
 

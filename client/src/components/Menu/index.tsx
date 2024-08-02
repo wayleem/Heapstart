@@ -8,7 +8,7 @@ import Pagination from "./Pagination";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { fetchCart, removeFromCart, selectCartItems } from "../../store/slices/cartSlice";
 import { selectAllProducts } from "../../store/slices/productsSlice";
-import { clearUser, selectIsAuthenticated } from "../../store/slices/userSlice";
+import { clearUser, logout, selectIsAuthenticated } from "../../store/slices/userSlice";
 import { CartIcon, ContactIcon, FAQIcon, LoginIcon, LogoutIcon, ProfileIcon, RegisterIcon, StoreIcon } from "../icons";
 
 interface MenuProps {
@@ -43,13 +43,12 @@ const Menu: React.FC<MenuProps> = ({ closeMenu }) => {
 	useEffect(() => {
 		const handleResize = () => setIsMobile(window.innerWidth < 768);
 		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
 
-	useEffect(() => {
 		if (cartStatus === "idle") {
 			dispatch(fetchCart());
 		}
+
+		return () => window.removeEventListener("resize", handleResize);
 	}, [cartStatus, dispatch]);
 
 	const toggleCart = () => {
@@ -58,6 +57,7 @@ const Menu: React.FC<MenuProps> = ({ closeMenu }) => {
 	};
 
 	const handleLogout = () => {
+		dispatch(logout());
 		dispatch(clearUser());
 		closeMenu();
 		navigate("/");

@@ -50,10 +50,10 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const updateCart = async (req: Request, res: Response) => {
 	try {
-		const userId = req.userId; // Assuming you have middleware that sets this
+		const userId = req.userId; // Assuming you set this in your authenticateJWT middleware
 		const { cart } = req.body;
 
-		const updatedUser = await User.findByIdAndUpdate(userId, { cart }, { new: true });
+		const updatedUser = await User.findByIdAndUpdate(userId, { cart }, { new: true, select: "cart" });
 
 		if (!updatedUser) {
 			return res.status(404).json({ message: "User not found" });
@@ -68,7 +68,7 @@ export const updateCart = async (req: Request, res: Response) => {
 export const getCart = async (req: Request, res: Response) => {
 	try {
 		const userId = req.userId;
-		const user = await User.findById(userId);
+		const user = await User.findById(userId, "cart");
 
 		if (!user) {
 			return res.status(404).json({ message: "User not found" });

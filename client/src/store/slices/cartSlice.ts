@@ -4,16 +4,6 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "../../hooks/ApiHooks";
 import { AxiosError } from "axios";
 
-interface CartItems {
-	[productId: string]: number;
-}
-
-interface CartState {
-	items: CartItems;
-	status: RequestStatus;
-	error: string | null;
-}
-
 const initialState: CartState = {
 	items: {},
 	status: "idle",
@@ -28,7 +18,7 @@ export const fetchCart = createAsyncThunk<
 	}
 >("cart/fetchCart", async (_, { rejectWithValue }) => {
 	try {
-		const response = await api.get<{ cart: CartItems }>("/api/cart");
+		const response = await api.get<{ cart: CartItems }>("/api/users/cart");
 		return response.data.cart;
 	} catch (err) {
 		const error = err as AxiosError<{ message: string }>;
@@ -47,7 +37,7 @@ export const updateCart = createAsyncThunk<
 	}
 >("cart/updateCart", async (cart, { rejectWithValue }) => {
 	try {
-		const response = await api.put<{ cart: CartItems }>("/api/cart", { cart });
+		const response = await api.put<{ cart: CartItems }>("/api/users/cart", { cart });
 		return response.data.cart;
 	} catch (err) {
 		const error = err as AxiosError<{ message: string }>;

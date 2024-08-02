@@ -1,5 +1,5 @@
 import express from "express";
-import { getProfile, updateProfile, getAllUsers } from "../controllers/userController";
+import { getProfile, updateProfile, getAllUsers, updateCart, getCart } from "../controllers/userController";
 import { authenticateJWT } from "../middleware/auth";
 import { validateUserUpdate } from "../middleware/validation";
 

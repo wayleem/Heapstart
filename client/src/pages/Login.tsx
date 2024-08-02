@@ -48,7 +48,7 @@ const Login: React.FC = () => {
 
 			// Always fetch the profile after login
 			await fetchUserProfile(response.data.token);
-
+			console.log("Token after login:", localStorage.getItem("userAccessToken"));
 			setTimeout(() => {
 				setIsLoading(false);
 				navigate("/");

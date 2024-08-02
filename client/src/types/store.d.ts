@@ -1,5 +1,9 @@
+interface CartItems {
+	[productId: string]: number;
+}
+
 interface CartState {
-	items: { [productId: string]: number };
+	items: CartItems;
 	status: RequestStatus;
 	error: string | null;
 }

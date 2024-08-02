@@ -18,8 +18,15 @@ const Store: React.FC = () => {
 	const [selectedCategory, setSelectedCategory] = useState<string>("");
 
 	const handleAddToCart = async (productId: string, quantity: number) => {
-		dispatch(addToCart({ productId, quantity }));
-		dispatch(fetchCart()); // Refresh the cart data after adding an item
+		console.log("Adding to cart:", productId, quantity); // Add this
+		try {
+			dispatch(addToCart({ productId, quantity }));
+			console.log("Successfully added to cart"); // Add this
+			dispatch(fetchCart());
+			console.log("Cart fetched successfully"); // Add this
+		} catch (error) {
+			console.error("Error adding to cart or fetching cart:", error); // Add this
+		}
 	};
 
 	useEffect(() => {
@@ -84,7 +91,7 @@ const Store: React.FC = () => {
 						<p className="text-sm text-gray-500 mt-2">{product.description}</p>
 						<p className="text-sm text-gray-500 mt-1">Category: {product.category}</p>
 						<button
-							onClick={() => handleAddToCart(product._id)}
+							onClick={() => handleAddToCart(product._id, 1)}
 							className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
 						>
 							Add to Cart
