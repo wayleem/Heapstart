@@ -1,8 +1,8 @@
-import React, { lazy } from "react";
+import React, { lazy, useEffect } from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
-import { persistor, store } from "./store";
+import { persistor, store, useAppDispatch, useAppSelector } from "./store";
 import { useSelector } from "react-redux";
 import { selectIsAdminAuthenticated } from "./store/slices/adminSlice";
 import Layout from "./components/Layout";
@@ -16,6 +16,8 @@ import Store from "./pages/Store";
 import Faq from "./pages/Faq";
 import Checkout from "./pages/Checkout";
 import AdminLogin from "./pages/AdminLogin";
+import { fetchCart } from "./store/slices/cartSlice";
+import { selectIsAuthenticated } from "./store/slices/userSlice";
 
 // Lazy load the admin dashboard
 const AdminDashboard = lazy(() => import("./pages/Dashboard"));
@@ -32,7 +34,14 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
-	console.log("API Base URL:", import.meta.env.VITE_API_BASE_URL);
+	const dispatch = useAppDispatch();
+	const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			dispatch(fetchCart());
+		}
+	}, [dispatch, isAuthenticated]);
 	return (
 		<Provider store={store}>
 			<PersistGate loading={null} persistor={persistor}>

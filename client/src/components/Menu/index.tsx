@@ -6,7 +6,7 @@ import NavItem from "./NavItem";
 import CartItem from "./CartItem";
 import Pagination from "./Pagination";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { removeFromCart, selectCartItems } from "../../store/slices/cartSlice";
+import { fetchCart, removeFromCart, selectCartItems } from "../../store/slices/cartSlice";
 import { selectAllProducts } from "../../store/slices/productsSlice";
 import { clearUser, selectIsAuthenticated } from "../../store/slices/userSlice";
 import { CartIcon, ContactIcon, FAQIcon, LoginIcon, LogoutIcon, ProfileIcon, RegisterIcon, StoreIcon } from "../icons";
@@ -20,6 +20,7 @@ const Menu: React.FC<MenuProps> = ({ closeMenu }) => {
 	const navigate = useNavigate();
 	const isAuthenticated = useAppSelector(selectIsAuthenticated);
 	const cartItems = useAppSelector(selectCartItems);
+	const cartStatus = useAppSelector((state) => state.cart.status);
 	const allProducts = useAppSelector(selectAllProducts);
 	const [isCartExpanded, setIsCartExpanded] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -44,6 +45,12 @@ const Menu: React.FC<MenuProps> = ({ closeMenu }) => {
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
+
+	useEffect(() => {
+		if (cartStatus === "idle") {
+			dispatch(fetchCart());
+		}
+	}, [cartStatus, dispatch]);
 
 	const toggleCart = () => {
 		setIsCartExpanded(!isCartExpanded);

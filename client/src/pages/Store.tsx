@@ -7,7 +7,7 @@ import {
 	selectProductsError,
 } from "../store/slices/productsSlice";
 import Loading from "../components/Loading";
-import { addToCart } from "../store/slices/cartSlice";
+import { addToCart, fetchCart } from "../store/slices/cartSlice";
 
 const Store: React.FC = () => {
 	const dispatch = useAppDispatch();
@@ -17,8 +17,9 @@ const Store: React.FC = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("");
 
-	const handleAddToCart = (productId: string) => {
-		dispatch(addToCart({ productId, quantity: 1 }));
+	const handleAddToCart = async (productId: string, quantity: number) => {
+		dispatch(addToCart({ productId, quantity }));
+		dispatch(fetchCart()); // Refresh the cart data after adding an item
 	};
 
 	useEffect(() => {

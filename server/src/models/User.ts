@@ -11,6 +11,9 @@ export interface IUser extends Document {
 	orderHistory: Types.ObjectId[];
 	lastLogin?: Date;
 	tokens: Tokens;
+	cart: {
+		[productId: string]: number;
+	};
 	comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -38,6 +41,11 @@ const UserSchema = new Schema<IUser>(
 			resetPasswordToken: { type: String },
 			resetPasswordExpires: { type: Date },
 			verificationToken: { type: String },
+		},
+		cart: {
+			type: Map,
+			of: Number,
+			default: {},
 		},
 	},
 	{ timestamps: true },
