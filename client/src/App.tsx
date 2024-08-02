@@ -14,7 +14,7 @@ import Store from "./pages/Store";
 import Faq from "./pages/Faq";
 import Checkout from "./pages/Checkout";
 import AdminLogin from "./pages/AdminLogin";
-import { fetchCart } from "./store/slices/cartSlice";
+import { clearCart, fetchCart } from "./store/slices/cartSlice";
 import { selectIsAuthenticated } from "./store/slices/userSlice";
 
 // Lazy load the admin dashboard
@@ -36,10 +36,10 @@ function App() {
 	const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
 	useEffect(() => {
-		if (isAuthenticated) {
-			dispatch(fetchCart());
+		if (!isAuthenticated) {
+			dispatch(clearCart());
 		}
-	}, [dispatch, isAuthenticated]);
+	}, [isAuthenticated, dispatch]);
 
 	return (
 		<Router>

@@ -1,5 +1,3 @@
-// src/store/slices/cartSlice.ts
-
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "../../hooks/ApiHooks";
 import { AxiosError } from "axios";
@@ -48,32 +46,62 @@ export const updateCart = createAsyncThunk<
 	}
 });
 
+export const addToCart = createAsyncThunk<
+	CartItems,
+	{ productId: string; quantity: number },
+	{
+		state: RootState;
+		rejectValue: string;
+	}
+>("cart/addToCart", async ({ productId, quantity }, { getState, dispatch, rejectWithValue }) => {
+	try {
+		const currentState = getState();
+		const updatedCart = {
+			...currentState.cart.items,
+			[productId]: (currentState.cart.items[productId] || 0) + quantity,
+		};
+		const response = await api.put<{ cart: CartItems }>("/api/users/cart", { cart: updatedCart });
+		return response.data.cart;
+	} catch (err) {
+		const error = err as AxiosError<{ message: string }>;
+		if (!error.response) {
+			throw err;
+		}
+		return rejectWithValue(error.response.data.message);
+	}
+});
+
+export const removeFromCart = createAsyncThunk<
+	CartItems,
+	string,
+	{
+		state: RootState;
+		rejectValue: string;
+	}
+>("cart/removeFromCart", async (productId, { getState, rejectWithValue }) => {
+	try {
+		const currentState = getState();
+		const updatedCart = { ...currentState.cart.items };
+		delete updatedCart[productId];
+		const response = await api.put<{ cart: CartItems }>("/api/users/cart", { cart: updatedCart });
+		return response.data.cart;
+	} catch (err) {
+		const error = err as AxiosError<{ message: string }>;
+		if (!error.response) {
+			throw err;
+		}
+		return rejectWithValue(error.response.data.message);
+	}
+});
+
 const cartSlice = createSlice({
 	name: "cart",
 	initialState,
 	reducers: {
-		addToCart: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
-			const { productId, quantity } = action.payload;
-			if (state.items[productId]) {
-				state.items[productId] += quantity;
-			} else {
-				state.items[productId] = quantity;
-			}
-		},
-		removeFromCart: (state, action: PayloadAction<string>) => {
-			const productId = action.payload;
-			delete state.items[productId];
-		},
-		updateCartItemQuantity: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
-			const { productId, quantity } = action.payload;
-			if (quantity > 0) {
-				state.items[productId] = quantity;
-			} else {
-				delete state.items[productId];
-			}
-		},
 		clearCart: (state) => {
 			state.items = {};
+			state.status = "idle";
+			state.error = null;
 		},
 		setCartStatus: (state, action: PayloadAction<RequestStatus>) => {
 			state.status = action.payload;
@@ -105,13 +133,33 @@ const cartSlice = createSlice({
 			.addCase(updateCart.rejected, (state, action) => {
 				state.status = "failed";
 				state.error = action.payload ?? "An unknown error occurred";
+			})
+			.addCase(addToCart.pending, (state) => {
+				state.status = "loading";
+			})
+			.addCase(addToCart.fulfilled, (state, action) => {
+				state.status = "succeeded";
+				state.items = action.payload;
+			})
+			.addCase(addToCart.rejected, (state, action) => {
+				state.status = "failed";
+				state.error = action.payload ?? "An unknown error occurred";
+			})
+			.addCase(removeFromCart.pending, (state) => {
+				state.status = "loading";
+			})
+			.addCase(removeFromCart.fulfilled, (state, action) => {
+				state.status = "succeeded";
+				state.items = action.payload;
+			})
+			.addCase(removeFromCart.rejected, (state, action) => {
+				state.status = "failed";
+				state.error = action.payload ?? "An unknown error occurred";
 			});
 	},
 });
 
-export const { addToCart, removeFromCart, updateCartItemQuantity, clearCart, setCartStatus, setCartError } =
-	cartSlice.actions;
-
+export const { clearCart, setCartStatus, setCartError } = cartSlice.actions;
 export const selectCartItems = (state: RootState) => state.cart.items;
 export const selectCartStatus = (state: RootState) => state.cart.status;
 export const selectCartError = (state: RootState) => state.cart.error;

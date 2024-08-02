@@ -57,6 +57,8 @@ declare global {
 	// Utility types
 	type RequestStatus = "idle" | "loading" | "succeeded" | "failed";
 	type AdminRole = "super" | "manager" | "support";
+
+	var persistor: Persistor;
 }
 
 export {};

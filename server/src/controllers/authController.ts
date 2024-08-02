@@ -106,3 +106,9 @@ export const loginAdmin = async (req: Request, res: Response) => {
 		res.status(500).json({ message: "Server error" });
 	}
 };
+
+export const logout = async (req: Request, res: Response) => {
+	// Here you can perform any necessary cleanup
+	// For example, if you're using refresh tokens, you might want to invalidate them
+	res.status(200).json({ message: "Logged out successfully" });
+};

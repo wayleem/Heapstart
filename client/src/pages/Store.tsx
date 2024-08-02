@@ -18,14 +18,11 @@ const Store: React.FC = () => {
 	const [selectedCategory, setSelectedCategory] = useState<string>("");
 
 	const handleAddToCart = async (productId: string, quantity: number) => {
-		console.log("Adding to cart:", productId, quantity); // Add this
 		try {
-			dispatch(addToCart({ productId, quantity }));
-			console.log("Successfully added to cart"); // Add this
-			dispatch(fetchCart());
-			console.log("Cart fetched successfully"); // Add this
+			await dispatch(addToCart({ productId, quantity })).unwrap();
+			console.log("Successfully added to cart");
 		} catch (error) {
-			console.error("Error adding to cart or fetching cart:", error); // Add this
+			console.error("Error adding to cart:", error);
 		}
 	};
 

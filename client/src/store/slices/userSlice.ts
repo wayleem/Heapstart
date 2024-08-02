@@ -1,5 +1,6 @@
 // src/store/slices/userSlice.ts
 
+import { persistor } from "../../store";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { clearCart } from "./cartSlice";
 import { api } from "../../hooks/ApiHooks";
@@ -26,21 +27,19 @@ export const logout = createAsyncThunk<
 	}
 >("user/logout", async (_, { dispatch, rejectWithValue }) => {
 	try {
-		// Perform logout API call
 		await api.post("/api/auth/logout");
-
-		// Clear any stored tokens or user data
-		localStorage.removeItem("accessToken");
-		sessionStorage.removeItem("accessToken");
-
-		// Clear the cart
-		dispatch(clearCart());
 	} catch (err) {
-		const error = err as AxiosError<{ message: string }>;
-		if (!error.response) {
-			throw err;
-		}
-		return rejectWithValue(error.response.data.message);
+		console.error("Logout API call failed:", err);
+		// Even if the API call fails, we still want to clear the local state
+	}
+
+	// Always clear local state, regardless of API call success
+	dispatch(clearUser());
+	dispatch(clearCart());
+
+	// If you're using Redux Persist, purge the store
+	if (persistor && persistor.purge) {
+		await persistor.purge();
 	}
 });
 

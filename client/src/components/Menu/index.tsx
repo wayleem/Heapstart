@@ -57,10 +57,18 @@ const Menu: React.FC<MenuProps> = ({ closeMenu }) => {
 	};
 
 	const handleLogout = () => {
-		dispatch(logout());
-		dispatch(clearUser());
-		closeMenu();
-		navigate("/");
+		dispatch(logout())
+			.unwrap()
+			.then(() => {
+				closeMenu();
+				navigate("/");
+			})
+			.catch((error) => {
+				console.error("Logout failed:", error);
+				// Even if the backend call fails, we still want to clear local state and redirect
+				closeMenu();
+				navigate("/");
+			});
 	};
 
 	const handleLinkClick = (isCartLink: boolean) => {
