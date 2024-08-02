@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { AnimatePresence, MotionConfig, motion, Variant } from "framer-motion";
 import Menu from "./Menu";
-import MenuIcon from "./MenuIcon";
+import { MenuIcon } from "./icons";
 
 const useMediaQuery = (query: string): boolean => {
 	const [matches, setMatches] = useState(false);
