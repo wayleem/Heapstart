@@ -7,6 +7,7 @@ import {
 	selectProductsError,
 } from "../store/slices/productsSlice";
 import Loading from "../components/Loading";
+import { addToCart } from "../store/slices/cartSlice";
 
 const Store: React.FC = () => {
 	const dispatch = useAppDispatch();
@@ -15,6 +16,10 @@ const Store: React.FC = () => {
 	const error = useAppSelector(selectProductsError);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("");
+
+	const handleAddToCart = (productId: string) => {
+		dispatch(addToCart({ productId, quantity: 1 }));
+	};
 
 	useEffect(() => {
 		if (status === "idle") {
@@ -77,7 +82,10 @@ const Store: React.FC = () => {
 						<p className="text-gray-600">${product.price.toFixed(2)}</p>
 						<p className="text-sm text-gray-500 mt-2">{product.description}</p>
 						<p className="text-sm text-gray-500 mt-1">Category: {product.category}</p>
-						<button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
+						<button
+							onClick={() => handleAddToCart(product._id)}
+							className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+						>
 							Add to Cart
 						</button>
 					</div>
