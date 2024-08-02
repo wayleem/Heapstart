@@ -17,10 +17,8 @@ import AdminLogin from "./pages/AdminLogin";
 import { clearCart, fetchCart } from "./store/slices/cartSlice";
 import { selectIsAuthenticated } from "./store/slices/userSlice";
 
-// Lazy load the admin dashboard
 const AdminDashboard = lazy(() => import("./pages/Dashboard"));
 
-// Create a wrapper component for protected admin routes
 const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
 	const isAdminAuthenticated = useSelector(selectIsAdminAuthenticated);
 
@@ -36,8 +34,8 @@ function App() {
 	const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
 	useEffect(() => {
-		if (!isAuthenticated) {
-			dispatch(clearCart());
+		if (isAuthenticated) {
+			dispatch(fetchCart());
 		}
 	}, [isAuthenticated, dispatch]);
 

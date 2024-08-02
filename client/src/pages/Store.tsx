@@ -7,7 +7,7 @@ import {
 	selectProductsError,
 } from "../store/slices/productsSlice";
 import Loading from "../components/Loading";
-import { addToCart, fetchCart } from "../store/slices/cartSlice";
+import { addToCart } from "../store/slices/cartSlice";
 
 const Store: React.FC = () => {
 	const dispatch = useAppDispatch();

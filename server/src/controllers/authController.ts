@@ -108,7 +108,6 @@ export const loginAdmin = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response) => {
-	// Here you can perform any necessary cleanup
-	// For example, if you're using refresh tokens, you might want to invalidate them
+	res.clearCookie("accessToken"); // Clear the access token cookie
 	res.status(200).json({ message: "Logged out successfully" });
 };

@@ -27,12 +27,14 @@ const Menu: React.FC<MenuProps> = ({ closeMenu }) => {
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
 	const itemsPerPage = 10;
+
 	const cartProducts = Object.entries(cartItems)
 		.map(([productId, quantity]) => {
 			const product = allProducts.find((p) => p._id === productId);
 			return { product, quantity };
 		})
 		.filter((item) => item.product !== undefined);
+
 	const totalPages = Math.ceil(cartProducts.length / itemsPerPage);
 	const displayedItems = cartProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -56,19 +58,14 @@ const Menu: React.FC<MenuProps> = ({ closeMenu }) => {
 		setCurrentPage(1);
 	};
 
-	const handleLogout = () => {
-		dispatch(logout())
-			.unwrap()
-			.then(() => {
-				closeMenu();
-				navigate("/");
-			})
-			.catch((error) => {
-				console.error("Logout failed:", error);
-				// Even if the backend call fails, we still want to clear local state and redirect
-				closeMenu();
-				navigate("/");
-			});
+	const handleLogout = async () => {
+		try {
+			await dispatch(logout()).unwrap();
+			closeMenu();
+			navigate("/");
+		} catch (error) {
+			console.error("Logout failed:", error);
+		}
 	};
 
 	const handleLinkClick = (isCartLink: boolean) => {

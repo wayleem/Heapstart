@@ -2,6 +2,13 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 import { api } from "../../hooks/ApiHooks";
 
+// Utility function for error handling
+const handleApiError = (err: unknown): string => {
+	const error = err as AxiosError<{ message: string }>;
+	return error.response?.data.message || "An unknown error occurred";
+};
+
+// Initial state
 const initialState: ProductsState = {
 	items: [],
 	purchasedItems: [],
@@ -10,40 +17,33 @@ const initialState: ProductsState = {
 	selectedProduct: null,
 };
 
-export const fetchProducts = createAsyncThunk<Product[], void, { rejectValue: { message: string } }>(
+// Async thunks
+export const fetchProducts = createAsyncThunk<Product[], void, { rejectValue: string }>(
 	"products/fetchProducts",
 	async (_, { rejectWithValue }) => {
 		try {
 			const response = await api.get<Product[]>("/api/products");
 			return response.data;
 		} catch (err) {
-			const error = err as AxiosError<{ message: string }>;
-			if (!error.response) {
-				throw err;
-			}
-			return rejectWithValue(error.response.data);
+			return rejectWithValue(handleApiError(err));
 		}
 	},
 );
 
-export const fetchPurchasedItems = createAsyncThunk<
-	Product[],
-	void,
-	{ state: RootState; rejectValue: { message: string } }
->("products/fetchPurchasedItems", async (_, { getState, rejectWithValue }) => {
-	const { user } = getState();
-	try {
-		const response = await api.get<{ purchasedItems: Product[] }>(`/api/products/purchased-items/${user.id}`);
-		return response.data.purchasedItems;
-	} catch (err) {
-		const error = err as AxiosError<{ message: string }>;
-		if (!error.response) {
-			throw err;
+export const fetchPurchasedItems = createAsyncThunk<Product[], void, { state: RootState; rejectValue: string }>(
+	"products/fetchPurchasedItems",
+	async (_, { getState, rejectWithValue }) => {
+		const { user } = getState();
+		try {
+			const response = await api.get<{ purchasedItems: Product[] }>(`/api/products/purchased-items/${user.id}`);
+			return response.data.purchasedItems;
+		} catch (err) {
+			return rejectWithValue(handleApiError(err));
 		}
-		return rejectWithValue(error.response.data);
-	}
-});
+	},
+);
 
+// Slice
 const productsSlice = createSlice({
 	name: "products",
 	initialState,
@@ -78,7 +78,7 @@ const productsSlice = createSlice({
 			})
 			.addCase(fetchProducts.rejected, (state, action) => {
 				state.status = "failed";
-				state.error = action.payload?.message || "Failed to fetch products";
+				state.error = action.payload || "Failed to fetch products";
 			})
 			.addCase(fetchPurchasedItems.fulfilled, (state, action) => {
 				state.purchasedItems = action.payload;
@@ -86,9 +86,11 @@ const productsSlice = createSlice({
 	},
 });
 
+// Actions
 export const { setSelectedProduct, clearSelectedProduct, updateProduct, addProduct, removeProduct } =
 	productsSlice.actions;
 
+// Selectors
 export const selectAllProducts = (state: RootState) => state.products.items;
 export const selectPurchasedItems = (state: RootState) => state.products.purchasedItems;
 export const selectProductsStatus = (state: RootState) => state.products.status;

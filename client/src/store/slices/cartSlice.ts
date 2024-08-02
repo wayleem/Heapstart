@@ -8,52 +8,47 @@ const initialState: CartState = {
 	error: null,
 };
 
-export const fetchCart = createAsyncThunk<
-	CartItems,
-	void,
-	{
-		rejectValue: string;
-	}
->("cart/fetchCart", async (_, { rejectWithValue }) => {
-	try {
-		const response = await api.get<{ cart: CartItems }>("/api/users/cart");
-		return response.data.cart;
-	} catch (err) {
-		const error = err as AxiosError<{ message: string }>;
-		if (!error.response) {
-			throw err;
-		}
-		return rejectWithValue(error.response.data.message);
-	}
-});
+// Utility function for error handling
+const handleApiError = (err: unknown): string => {
+	const error = err as AxiosError<{ message: string }>;
+	return error.response?.data.message || "An unknown error occurred";
+};
 
-export const updateCart = createAsyncThunk<
-	CartItems,
-	CartItems,
-	{
-		rejectValue: string;
-	}
->("cart/updateCart", async (cart, { rejectWithValue }) => {
-	try {
-		const response = await api.put<{ cart: CartItems }>("/api/users/cart", { cart });
-		return response.data.cart;
-	} catch (err) {
-		const error = err as AxiosError<{ message: string }>;
-		if (!error.response) {
-			throw err;
+// Async thunks
+const createCartThunk = <T>(type: string, apiCall: (arg: T) => Promise<{ data: { cart: CartItems } }>) =>
+	createAsyncThunk<CartItems, T, { state: RootState; rejectValue: string }>(
+		type,
+		async (arg, { rejectWithValue }) => {
+			try {
+				const response = await apiCall(arg);
+				return response.data.cart;
+			} catch (err) {
+				return rejectWithValue(handleApiError(err));
+			}
+		},
+	);
+
+export const fetchCart = createAsyncThunk<CartItems, void, { state: RootState; rejectValue: string }>(
+	"cart/fetchCart",
+	async (_, { rejectWithValue }) => {
+		try {
+			const response = await api.get<{ cart: CartItems }>("/api/users/cart");
+			return response.data.cart;
+		} catch (err) {
+			return rejectWithValue(handleApiError(err));
 		}
-		return rejectWithValue(error.response.data.message);
-	}
-});
+	},
+);
+
+export const updateCart = createCartThunk("cart/updateCart", (cart: CartItems) =>
+	api.put<{ cart: CartItems }>("/api/users/cart", { cart }),
+);
 
 export const addToCart = createAsyncThunk<
 	CartItems,
 	{ productId: string; quantity: number },
-	{
-		state: RootState;
-		rejectValue: string;
-	}
->("cart/addToCart", async ({ productId, quantity }, { getState, dispatch, rejectWithValue }) => {
+	{ state: RootState; rejectValue: string }
+>("cart/addToCart", async ({ productId, quantity }, { getState, rejectWithValue }) => {
 	try {
 		const currentState = getState();
 		const updatedCart = {
@@ -63,46 +58,31 @@ export const addToCart = createAsyncThunk<
 		const response = await api.put<{ cart: CartItems }>("/api/users/cart", { cart: updatedCart });
 		return response.data.cart;
 	} catch (err) {
-		const error = err as AxiosError<{ message: string }>;
-		if (!error.response) {
-			throw err;
-		}
-		return rejectWithValue(error.response.data.message);
+		return rejectWithValue(handleApiError(err));
 	}
 });
 
-export const removeFromCart = createAsyncThunk<
-	CartItems,
-	string,
-	{
-		state: RootState;
-		rejectValue: string;
-	}
->("cart/removeFromCart", async (productId, { getState, rejectWithValue }) => {
-	try {
-		const currentState = getState();
-		const updatedCart = { ...currentState.cart.items };
-		delete updatedCart[productId];
-		const response = await api.put<{ cart: CartItems }>("/api/users/cart", { cart: updatedCart });
-		return response.data.cart;
-	} catch (err) {
-		const error = err as AxiosError<{ message: string }>;
-		if (!error.response) {
-			throw err;
+export const removeFromCart = createAsyncThunk<CartItems, string, { state: RootState; rejectValue: string }>(
+	"cart/removeFromCart",
+	async (productId, { getState, rejectWithValue }) => {
+		try {
+			const currentState = getState();
+			const updatedCart = { ...currentState.cart.items };
+			delete updatedCart[productId];
+			const response = await api.put<{ cart: CartItems }>("/api/users/cart", { cart: updatedCart });
+			return response.data.cart;
+		} catch (err) {
+			return rejectWithValue(handleApiError(err));
 		}
-		return rejectWithValue(error.response.data.message);
-	}
-});
+	},
+);
 
+// Slice
 const cartSlice = createSlice({
 	name: "cart",
 	initialState,
 	reducers: {
-		clearCart: (state) => {
-			state.items = {};
-			state.status = "idle";
-			state.error = null;
-		},
+		clearCart: () => initialState,
 		setCartStatus: (state, action: PayloadAction<RequestStatus>) => {
 			state.status = action.payload;
 		},
@@ -111,54 +91,26 @@ const cartSlice = createSlice({
 		},
 	},
 	extraReducers: (builder) => {
-		builder
-			.addCase(fetchCart.pending, (state) => {
-				state.status = "loading";
-			})
-			.addCase(fetchCart.fulfilled, (state, action) => {
-				state.status = "succeeded";
-				state.items = action.payload;
-			})
-			.addCase(fetchCart.rejected, (state, action) => {
-				state.status = "failed";
-				state.error = action.payload ?? "An unknown error occurred";
-			})
-			.addCase(updateCart.pending, (state) => {
-				state.status = "loading";
-			})
-			.addCase(updateCart.fulfilled, (state, action) => {
-				state.status = "succeeded";
-				state.items = action.payload;
-			})
-			.addCase(updateCart.rejected, (state, action) => {
-				state.status = "failed";
-				state.error = action.payload ?? "An unknown error occurred";
-			})
-			.addCase(addToCart.pending, (state) => {
-				state.status = "loading";
-			})
-			.addCase(addToCart.fulfilled, (state, action) => {
-				state.status = "succeeded";
-				state.items = action.payload;
-			})
-			.addCase(addToCart.rejected, (state, action) => {
-				state.status = "failed";
-				state.error = action.payload ?? "An unknown error occurred";
-			})
-			.addCase(removeFromCart.pending, (state) => {
-				state.status = "loading";
-			})
-			.addCase(removeFromCart.fulfilled, (state, action) => {
-				state.status = "succeeded";
-				state.items = action.payload;
-			})
-			.addCase(removeFromCart.rejected, (state, action) => {
-				state.status = "failed";
-				state.error = action.payload ?? "An unknown error occurred";
-			});
+		const addCaseForThunk = (thunk: any) => {
+			builder
+				.addCase(thunk.pending, (state) => {
+					state.status = "loading";
+				})
+				.addCase(thunk.fulfilled, (state, action) => {
+					state.status = "succeeded";
+					state.items = action.payload;
+				})
+				.addCase(thunk.rejected, (state, action) => {
+					state.status = "failed";
+					state.error = action.payload ?? "An unknown error occurred";
+				});
+		};
+
+		[fetchCart, updateCart, addToCart, removeFromCart].forEach(addCaseForThunk);
 	},
 });
 
+// Actions and Selectors
 export const { clearCart, setCartStatus, setCartError } = cartSlice.actions;
 export const selectCartItems = (state: RootState) => state.cart.items;
 export const selectCartStatus = (state: RootState) => state.cart.status;

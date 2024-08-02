@@ -1,12 +1,20 @@
 // src/store/slices/userSlice.ts
-
-import { persistor } from "../../store";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { clearCart } from "./cartSlice";
+import { clearCart, fetchCart } from "./cartSlice";
 import { api } from "../../hooks/ApiHooks";
 import { AxiosError } from "axios";
 import { AppDispatch } from "..";
 
+// Types
+type UserPayload = Partial<Omit<UserState, "isAuthenticated" | "status">>;
+
+// Utility function for error handling
+const handleApiError = (err: unknown): string => {
+	const error = err as AxiosError<{ message: string }>;
+	return error.response?.data.message || "An unknown error occurred";
+};
+
+// Initial state
 const initialState: UserState = {
 	id: null,
 	email: null,
@@ -17,38 +25,63 @@ const initialState: UserState = {
 	error: null,
 };
 
-export const logout = createAsyncThunk<
-	void,
-	void,
-	{
-		dispatch: AppDispatch;
-		state: RootState;
-		rejectValue: string;
-	}
->("user/logout", async (_, { dispatch, rejectWithValue }) => {
+interface LoginCredentials {
+	email: string;
+	password: string;
+}
+
+interface LoginResponse {
+	userId: string;
+	email: string;
+	token: string;
+}
+
+export const logout = createAsyncThunk<void, void, { state: RootState; dispatch: AppDispatch }>(
+	"user/logout",
+	async (_, { dispatch }) => {
+		try {
+			await api.post("/api/auth/logout");
+		} catch (error) {
+			console.error("Logout error:", error);
+		} finally {
+			// Always clear the cart, even if the logout request fails
+			dispatch(clearCart());
+			dispatch(clearUser());
+		}
+	},
+);
+
+export const login = createAsyncThunk<
+	{ id: string; email: string; accessToken: string },
+	LoginCredentials,
+	{ state: RootState; dispatch: AppDispatch }
+>("user/login", async (credentials, { dispatch }) => {
 	try {
-		await api.post("/api/auth/logout");
-	} catch (err) {
-		console.error("Logout API call failed:", err);
-		// Even if the API call fails, we still want to clear the local state
-	}
+		const response = await api.post<LoginResponse>("/api/auth/login", credentials);
+		const { userId, email, token } = response.data;
 
-	// Always clear local state, regardless of API call success
-	dispatch(clearUser());
-	dispatch(clearCart());
+		// Fetch the user's cart after successful login
+		await dispatch(fetchCart());
 
-	// If you're using Redux Persist, purge the store
-	if (persistor && persistor.purge) {
-		await persistor.purge();
+		return { id: userId, email, accessToken: token };
+	} catch (error) {
+		// Handle error
+		throw error;
 	}
 });
 
+// Slice
 const userSlice = createSlice({
 	name: "user",
 	initialState,
 	reducers: {
-		setUser: (state, action: PayloadAction<Partial<UserState>>) => {
-			return { ...state, ...action.payload, isAuthenticated: true, status: "succeeded" };
+		setUser: (state, action: PayloadAction<UserPayload>) => {
+			return {
+				...state,
+				...action.payload,
+				isAuthenticated: true,
+				status: "succeeded",
+			};
 		},
 		clearUser: () => initialState,
 		setError: (state, action: PayloadAction<string>) => {
@@ -61,17 +94,18 @@ const userSlice = createSlice({
 			.addCase(logout.pending, (state) => {
 				state.status = "loading";
 			})
-			.addCase(logout.fulfilled, () => {
-				return initialState;
-			})
+			.addCase(logout.fulfilled, () => initialState)
 			.addCase(logout.rejected, (state, action) => {
 				state.status = "failed";
-				state.error = action.payload ?? "Logout failed";
+				state.error = action.error.message ?? "Logout failed";
 			});
 	},
 });
 
+// Actions
 export const { setUser, clearUser, setError } = userSlice.actions;
+
+// Selectors
 export const selectUser = (state: RootState) => state.user;
 export const selectIsAuthenticated = (state: RootState) => state.user.isAuthenticated;
 
