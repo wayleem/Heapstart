@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-
-interface CartItem {
-	id: number;
-	name: string;
-	price: number;
-	quantity: number;
-}
+import { useAppSelector } from "../store";
+import { selectCartItems } from "../store/slices/cartSlice";
+import { selectAllProducts } from "../store/slices/productsSlice";
 
 const Checkout: React.FC = () => {
-	const [cartItems] = useState<CartItem[]>([
-		{ id: 1, name: "Introduction to Algorithms Textbook", price: 79.99, quantity: 1 },
-		{ id: 2, name: "Mechanical Keyboard for Coding", price: 129.99, quantity: 1 },
-		{ id: 3, name: "CS T-Shirt", price: 19.99, quantity: 2 },
-	]);
+	const cartItems = useAppSelector(selectCartItems);
+	const allProducts = useAppSelector(selectAllProducts);
+
+	const cartProducts = Object.entries(cartItems)
+		.map(([productId, quantity]) => {
+			const product = allProducts.find((p) => p._id === productId);
+			return { product, quantity };
+		})
+		.filter((item) => item.product !== undefined);
 
 	const [formData, setFormData] = useState({
 		name: "",
@@ -41,7 +41,11 @@ const Checkout: React.FC = () => {
 	};
 
 	const calculateTotal = () => {
-		return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+		return cartProducts
+			.reduce((total, item) => {
+				return total + (item.product?.price || 0) * item.quantity;
+			}, 0)
+			.toFixed(2);
 	};
 
 	return (
@@ -51,18 +55,21 @@ const Checkout: React.FC = () => {
 				<div className="p-4 bg-gray-50 border-b">
 					<h2 className="text-lg font-semibold mb-2">Order Summary</h2>
 					<div className="space-y-2 mb-4">
-						{cartItems.map((item) => (
-							<div key={item.id} className="flex justify-between items-center text-sm">
-								<div className="flex items-center">
-									<div className="w-8 h-8 bg-gray-200 rounded-md mr-2"></div>
-									<div>
-										<h3 className="font-medium">{item.name}</h3>
-										<p className="text-gray-600">Qty: {item.quantity}</p>
+						{cartProducts.map(
+							({ product, quantity }) =>
+								product && (
+									<div key={product._id} className="flex justify-between items-center text-sm">
+										<div className="flex items-center">
+											<div className="w-8 h-8 bg-gray-200 rounded-md mr-2"></div>
+											<div>
+												<h3 className="font-medium">{product.name}</h3>
+												<p className="text-gray-600">Qty: {quantity}</p>
+											</div>
+										</div>
+										<p className="font-medium">${(product.price * quantity).toFixed(2)}</p>
 									</div>
-								</div>
-								<p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
-							</div>
-						))}
+								),
+						)}
 					</div>
 					<div className="flex justify-between items-center text-lg font-semibold">
 						<h3>Total:</h3>
