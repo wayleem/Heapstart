@@ -16,6 +16,7 @@ import Checkout from "./pages/Checkout";
 import AdminLogin from "./pages/AdminLogin";
 import { clearCart, fetchCart } from "./store/slices/cartSlice";
 import { selectIsAuthenticated } from "./store/slices/userSlice";
+import { fetchProducts, selectProductsStatus } from "./store/slices/productsSlice";
 
 const AdminDashboard = lazy(() => import("./pages/Dashboard"));
 
@@ -32,12 +33,16 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
 function App() {
 	const dispatch = useAppDispatch();
 	const isAuthenticated = useAppSelector(selectIsAuthenticated);
+	const productsStatus = useAppSelector(selectProductsStatus);
 
 	useEffect(() => {
 		if (isAuthenticated) {
 			dispatch(fetchCart());
+			if (productsStatus === "idle") {
+				dispatch(fetchProducts());
+			}
 		}
-	}, [isAuthenticated, dispatch]);
+	}, [isAuthenticated, dispatch, productsStatus]);
 
 	return (
 		<Router>
