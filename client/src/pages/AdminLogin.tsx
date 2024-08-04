@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setAdmin, setAdminError } from "../store/slices/adminSlice";
 import { useNavigate } from "react-router-dom";
-import { api } from "../hooks/ApiHooks";
+import { api } from "../hooks/apiHooks";
 
 const AdminLogin: React.FC = () => {
 	const [username, setUsername] = useState("");

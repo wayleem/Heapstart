@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../store";
 import { selectUser, setUser } from "../store/slices/userSlice";
-import { api } from "../hooks/ApiHooks";
+import { api } from "../hooks/apiHooks";
 
 const Profile: React.FC = () => {
 	const navigate = useNavigate();

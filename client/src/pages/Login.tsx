@@ -3,7 +3,7 @@ import { useAppDispatch } from "../store";
 import { setUser, setError } from "../store/slices/userSlice";
 import { Link, useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
-import { api } from "../hooks/ApiHooks";
+import { api } from "../hooks/apiHooks";
 
 interface LoginFormData {
 	email: string;

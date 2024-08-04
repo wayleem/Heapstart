@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { api } from "../../hooks/ApiHooks";
+import { api } from "../../hooks/apiHooks";
 import { AxiosError } from "axios";
 
 const initialState: CartState = {

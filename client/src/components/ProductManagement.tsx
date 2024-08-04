@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ProductForm from "./ProductForm";
 import ProductList from "./ProductList";
-import { api } from "../hooks/ApiHooks";
+import { api } from "../hooks/apiHooks";
 
 const ProductManagement: React.FC = () => {
 	const [products, setProducts] = useState<Product[]>([]);
