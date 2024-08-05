@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
-import { api } from "../../hooks/apiHooks";
+import { api } from "@hooks/apiHooks";
 
 // Utility function for error handling
 const handleApiError = (err: unknown): string => {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { api } from "../hooks/apiHooks";
+import { api } from "@hooks/apiHooks";
 
 const PasswordReset: React.FC = () => {
 	const [email, setEmail] = useState("");

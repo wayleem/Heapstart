@@ -1,12 +1,11 @@
 // Menu/index.tsx
-
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import Logo from "../../assets/sm_heapstart.svg";
-import { useAppDispatch, useAppSelector } from "../../store";
-import { removeFromCart } from "../../store/slices/cartSlice";
-import { logout, selectIsAuthenticated } from "../../store/slices/userSlice";
-import { useMenuHooks } from "../../hooks/menuHooks";
+import Logo from "@assets/sm_heapstart.svg";
+import { useAppDispatch, useAppSelector } from "@store/index";
+import { removeFromCart } from "@store/slices/cartSlice";
+import { logout, selectIsAuthenticated } from "@store/slices/userSlice";
+import { useMenuHooks } from "@hooks/menuHooks";
 import CartSection from "./CartSection";
 import NavigationSection from "./NavigationSection";
 import AuthSection from "./AuthSection";

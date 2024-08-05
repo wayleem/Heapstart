@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { selectAdmin } from "../store/slices/adminSlice";
-import ProductManagement from "../components/ProductManagement";
+import { selectAdmin } from "@store/slices/adminSlice";
+import ProductManagement from "@components/admin/ProductManagement";
 
 const AdminDashboard: React.FC = () => {
 	const admin = useSelector(selectAdmin);

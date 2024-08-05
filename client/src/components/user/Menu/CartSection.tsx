@@ -4,8 +4,8 @@ import CartItem from "./CartItem";
 import Pagination from "./Pagination";
 import { CartIcon } from "../icons";
 import NavItem from "./NavItem";
-import { useAppSelector } from "../../store";
-import { selectCartItems } from "../../store/slices/cartSlice";
+import { useAppSelector } from "@store/index";
+import { selectCartItems } from "@store/slices/cartSlice";
 
 interface CartSectionProps {
 	isCartExpanded: boolean;

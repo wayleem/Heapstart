@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { debounce } from "lodash";
-import { useAppDispatch, useAppSelector } from "../store";
-import { fetchCart, selectCartItems } from "../store/slices/cartSlice";
-import { selectAllProducts, selectProductsStatus } from "../store/slices/productsSlice";
+import { useAppDispatch, useAppSelector } from "@store/index";
+import { fetchCart, selectCartItems } from "@store/slices/cartSlice";
+import { selectAllProducts, selectProductsStatus } from "@store/slices/productsSlice";
 
 export const useMenuHooks = () => {
 	const dispatch = useAppDispatch();

@@ -1,4 +1,4 @@
-import Logo from "../assets/lg_heapstart.svg";
+import Logo from "@assets/lg_heapstart.svg";
 
 function Home() {
 	return (

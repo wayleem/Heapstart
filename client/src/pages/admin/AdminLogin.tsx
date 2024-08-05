@@ -1,29 +1,22 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setAdmin, setAdminError } from "../store/slices/adminSlice";
+import { loginAdmin, setAdmin, setAdminError } from "@store/slices/adminSlice";
 import { useNavigate } from "react-router-dom";
-import { api } from "../hooks/apiHooks";
+import { useAppDispatch } from "@store/index";
 
 const AdminLogin: React.FC = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
-			const response = await api.post("/api/admin/login", { username, password });
-			dispatch(
-				setAdmin({
-					admin: response.data.admin,
-					token: response.data.token,
-				}),
-			);
+			await dispatch(loginAdmin({ username, password })).unwrap();
 			navigate("/admin/dashboard");
 		} catch (error) {
 			console.error("Admin login failed:", error);
-			dispatch(setAdminError("Admin login failed. Please check your credentials."));
 		}
 	};
 

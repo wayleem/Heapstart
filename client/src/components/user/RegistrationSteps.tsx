@@ -3,8 +3,8 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import Select from "react-select";
 import countryList from "react-select-country-list";
-import Loading from "./Loading";
-import { FormData, ErrorState } from "../hooks/registrationHooks";
+import Loading from "@components/Loading";
+import { FormData, ErrorState } from "@hooks/registrationHooks";
 
 interface RegistrationStepsProps {
 	step: number;

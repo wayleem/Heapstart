@@ -1,4 +1,38 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { api } from "@hooks/apiHooks";
+
+interface LoginCredentials {
+	username: string;
+	password: string;
+}
+
+interface LoginResponse {
+	admin: { id: string; username: string };
+	token: string;
+}
+
+export const loginAdmin = createAsyncThunk<LoginResponse, LoginCredentials, { rejectValue: string }>(
+	"admin/login",
+	async (credentials, { rejectWithValue }) => {
+		try {
+			const response = await api.post<LoginResponse>("/api/admin/login", credentials);
+			return response.data;
+		} catch (error) {
+			if (error instanceof Error) {
+				return rejectWithValue(error.message);
+			}
+			return rejectWithValue("An unknown error occurred");
+		}
+	},
+);
+
+interface AdminState {
+	admin: { id: string; username: string } | null;
+	accessToken: string | null;
+	isAuthenticated: boolean;
+	status: "idle" | "loading" | "succeeded" | "failed";
+	error: string | null;
+}
 
 const initialState: AdminState = {
 	admin: null,
@@ -23,6 +57,22 @@ const adminSlice = createSlice({
 			state.error = action.payload;
 			state.status = "failed";
 		},
+	},
+	extraReducers: (builder) => {
+		builder
+			.addCase(loginAdmin.pending, (state) => {
+				state.status = "loading";
+			})
+			.addCase(loginAdmin.fulfilled, (state, action) => {
+				state.admin = action.payload.admin;
+				state.accessToken = action.payload.token;
+				state.isAuthenticated = true;
+				state.status = "succeeded";
+			})
+			.addCase(loginAdmin.rejected, (state, action) => {
+				state.error = action.payload ?? "An unknown error occurred";
+				state.status = "failed";
+			});
 	},
 });
 

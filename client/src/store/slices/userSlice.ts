@@ -1,7 +1,7 @@
 // src/store/slices/userSlice.ts
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { clearCart, fetchCart } from "./cartSlice";
-import { api } from "../../hooks/apiHooks";
+import { api } from "@hooks/apiHooks";
 import { AppDispatch } from "..";
 
 // Types
