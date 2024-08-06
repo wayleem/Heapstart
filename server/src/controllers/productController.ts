@@ -30,7 +30,10 @@ export const createProduct = [
 	upload.array("images", 5),
 	async (req: Request, res: Response) => {
 		try {
-			const productData = req.body;
+			const { _id, ...productData } = req.body;
+
+			if (productData.price) productData.price = Number(productData.price);
+			if (productData.supplier_cost) productData.supplier_cost = Number(productData.supplier_cost);
 
 			if (req.files && Array.isArray(req.files)) {
 				productData.images = (req.files as Express.Multer.File[]).map((file) => file.buffer.toString("base64"));
@@ -40,6 +43,7 @@ export const createProduct = [
 			await product.save();
 			res.status(201).json(product);
 		} catch (error) {
+			console.error("Product creation error:", error);
 			res.status(400).json({ type: ProductErrors.PRODUCT_CREATION_ERROR, message: error.message });
 		}
 	},

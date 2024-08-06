@@ -66,15 +66,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ product: initialProduct, onCl
 		try {
 			const productData = new FormData();
 			Object.entries(formData).forEach(([key, value]) => {
-				if (key !== "images") {
+				if (key !== "images" && key !== "_id") {
 					productData.append(key, value.toString());
 				}
 			});
-
 			imageFiles.forEach((file) => {
 				productData.append("images", file);
 			});
-
 			if (id) {
 				await updateProduct(id, productData);
 			} else {
@@ -83,7 +81,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product: initialProduct, onCl
 			onClose();
 			navigate("/");
 		} catch (error) {
-			console.error("Failed to save product:", error);
+			console.error("Failed to save product:", error.response?.data || error.message);
 		}
 	};
 
