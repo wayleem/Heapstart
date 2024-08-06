@@ -7,14 +7,22 @@ export const fetchProducts = createAsyncThunk<Product[], void>("products/fetchPr
 });
 
 export const addProduct = createAsyncThunk<Product, ProductData>("products/addProduct", async (productData) => {
-	const response = await createProduct(productData);
+	const formData = new FormData();
+	Object.entries(productData).forEach(([key, value]) => {
+		formData.append(key, value.toString());
+	});
+	const response = await createProduct(formData);
 	return response.data;
 });
 
 export const editProduct = createAsyncThunk<Product, { id: string; productData: ProductData }>(
 	"products/editProduct",
 	async ({ id, productData }) => {
-		const response = await updateProduct(id, productData);
+		const formData = new FormData();
+		Object.entries(productData).forEach(([key, value]) => {
+			formData.append(key, value.toString());
+		});
+		const response = await updateProduct(id, formData);
 		return response.data;
 	},
 );
