@@ -3,7 +3,7 @@ import { useAppDispatch } from "@store/index";
 import axios from "axios";
 import { setUser } from "@store/slices/userSlice";
 import { useNavigate } from "react-router-dom";
-import { RegistrationSteps } from "@components/user/RegistrationSteps";
+import { RegistrationSteps } from "@components/RegistrationSteps";
 import { initialErrors, initialFormData, validateStep } from "@hooks/registrationHooks";
 import { api } from "@hooks/apiHooks";
 

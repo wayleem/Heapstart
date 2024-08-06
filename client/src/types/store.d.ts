@@ -16,17 +16,6 @@ interface ProductsState {
 	selectedProduct: Product | null;
 }
 
-interface AdminState {
-	admin: {
-		id: string;
-		username: string;
-	} | null;
-	accessToken: string | null;
-	isAuthenticated: boolean;
-	status: RequestStatus;
-	error: string | null;
-}
-
 interface UserState {
 	id: string | null;
 	email: string | null;
@@ -41,5 +30,4 @@ interface RootState {
 	cart: CartState;
 	user: UserState;
 	products: ProductsState;
-	admin: AdminState;
 }
