@@ -1,35 +1,29 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "./store";
+import Login from "./pages/Login";
+import ProductList from "./components/ProductList";
+import ProductFormWrapper from "./components/ProductFormWrapper";
 
-function App() {
-  const [count, setCount] = useState(0)
+const PrivateRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
+	const isAuthenticated = useSelector((state: RootState) => state.admin.isAuthenticated);
+	return isAuthenticated ? element : <Navigate to="/login" />;
+};
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+const App: React.FC = () => {
+	return (
+		<Router>
+			<div className="container mx-auto p-4">
+				<Routes>
+					<Route path="/login" element={<Login />} />
+					<Route path="/" element={<PrivateRoute element={<ProductList />} />} />
+					<Route path="/add" element={<PrivateRoute element={<ProductFormWrapper />} />} />
+					<Route path="/edit/:id" element={<PrivateRoute element={<ProductFormWrapper />} />} />
+				</Routes>
+			</div>
+		</Router>
+	);
+};
 
-export default App
+export default App;
