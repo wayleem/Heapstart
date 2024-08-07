@@ -1,0 +1,7 @@
+{
+	"inputDir": "./src",
+	"outputFile": "./server.txt",
+	"include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+	"ignore": ["**/*.test.ts", "**/*.spec.js", "**/*.cjs", "**/*.config.js", "**/*.config.ts", "node_modules/**"],
+	"watch": false
+}
