@@ -16,6 +16,12 @@ interface ProductsState {
 	selectedProduct: Product | null;
 }
 
+interface OrderState {
+	orders: Order[];
+	status: "idle" | "loading" | "succeeded" | "failed";
+	error: string | null;
+}
+
 interface UserState {
 	id: string | null;
 	email: string | null;

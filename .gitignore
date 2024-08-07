@@ -8,6 +8,9 @@ build/
 **/dist/
 **/build/
 
+**.txt
+**/**.txt
+
 # Environment variables
 .env
 .env.local
@@ -86,3 +89,5 @@ Desktop.ini
 # dotenv environment variables file
 .env
 .env.*
+
+

@@ -46,6 +46,36 @@ declare global {
 		isActive: boolean;
 	}
 
+	interface TrackingNumber {
+		productId: string;
+		trackingNumber: string;
+	}
+
+	interface CreateOrderData {
+		products: Array<{
+			productId: string;
+			quantity: number;
+			price: number;
+		}>;
+		shippingAddress: Address;
+		paymentInfo: any; // Consider creating a more specific type for paymentInfo
+		orderTotal: number;
+	}
+
+	interface Order {
+		_id: string;
+		userId: string;
+		products: ProductInOrder[];
+		orderTotal: number;
+		orderDate: string;
+		shippingAddress: Address;
+		trackingNumber?: string;
+		trackingNumbers: TrackingNumber[];
+		status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+		createdAt: string;
+		updatedAt: string;
+	}
+
 	// Utility types
 	type RequestStatus = "idle" | "loading" | "succeeded" | "failed";
 	type AdminRole = "super" | "manager" | "support";

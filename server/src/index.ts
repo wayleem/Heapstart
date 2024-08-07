@@ -1,4 +1,7 @@
 import dotenv from "dotenv";
+
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -9,8 +12,8 @@ import { adminRouter } from "./routes/adminRoutes";
 import { productRouter } from "./routes/productRoutes";
 import { orderRouter } from "./routes/orderRoutes";
 import { errorHandler } from "./middleware/errorHandler";
+import { paymentRouter } from "./routes/paymentRoutes";
 
-dotenv.config();
 const app = express();
 
 // Middleware
@@ -29,6 +32,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/products", productRouter);
+app.use("/api/payment", paymentRouter);
 app.use("/api/orders", orderRouter);
 
 // Error handling middleware
