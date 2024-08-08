@@ -28,9 +28,9 @@ interface ShippingFormProps {
 }
 
 interface PaymentFormProps {
-	onNext: (data: PaymentFormData) => void;
-	onBack: () => void;
 	total: number;
+	shippingInfo: Address;
+	cartItems: { [productId: string]: number };
 }
 
 interface OrderReviewProps {

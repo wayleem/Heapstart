@@ -1,33 +1,44 @@
 import React, { useEffect, useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { selectCartItems } from "@store/slices/cartSlice";
-import { useAppSelector } from "@store/index";
+import { clearCart, selectCartItems } from "@store/slices/cartSlice";
+import { useAppSelector, useAppDispatch } from "@store/index";
 import { api } from "@hooks/apiHooks";
+import { useNavigate } from "react-router-dom";
+import { createOrder, setCurrentOrder } from "@store/slices/orderSlice";
+import { selectAllProducts } from "@store/slices/productsSlice";
+import { AxiosError } from "axios";
 
-interface PaymentFormData {
-	paymentMethodId: string;
-}
-
-const PaymentForm: React.FC<PaymentFormProps> = ({ onNext, onBack, total }) => {
+const PaymentForm: React.FC<PaymentFormProps> = ({ total, shippingInfo }) => {
 	const stripe = useStripe();
 	const elements = useElements();
 	const [clientSecret, setClientSecret] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [processing, setProcessing] = useState(false);
 	const cartItems = useAppSelector(selectCartItems);
+	const products = useAppSelector(selectAllProducts);
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const fetchPaymentIntent = async () => {
 			try {
+				const cartItemsArray = Object.entries(cartItems).map(([productId, quantity]) => ({
+					productId,
+					quantity,
+				}));
+
+				if (cartItemsArray.length === 0) {
+					setError("Your cart is empty. Please add items before proceeding to checkout.");
+					return;
+				}
+
 				const response = await api.post("/api/payment/create-payment-intent", {
-					items: Object.entries(cartItems).map(([productId, quantity]) => ({
-						productId,
-						quantity,
-					})),
+					items: cartItemsArray,
 				});
 				setClientSecret(response.data.clientSecret);
 			} catch (error) {
 				setError("Failed to initialize payment. Please try again.");
+				console.error("Error fetching payment intent:", error);
 			}
 		};
 
@@ -36,29 +47,13 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onNext, onBack, total }) => {
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
-
-		if (!stripe || !elements) {
-			console.error("Stripe.js has not loaded yet.");
+		if (!stripe || !elements || !clientSecret) {
+			console.error("Stripe.js has not loaded yet or client secret is missing.");
 			return;
 		}
+		setProcessing(true);
 
 		try {
-			console.log("Cart items:", cartItems);
-			const items = Object.entries(cartItems).map(([productId, quantity]) => ({
-				productId,
-				quantity,
-			}));
-			console.log("Sending items to server:", items);
-
-			const response = await api.post("/api/payment/create-payment-intent", { items });
-			console.log("Server response:", response.data);
-
-			const { clientSecret } = response.data;
-
-			if (!clientSecret) {
-				throw new Error("No client secret received from the server");
-			}
-
 			const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
 				payment_method: {
 					card: elements.getElement(CardElement)!,
@@ -67,11 +62,57 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onNext, onBack, total }) => {
 
 			if (stripeError) {
 				console.error("Payment failed:", stripeError);
+				setError(stripeError.message || "Payment failed");
 			} else if (paymentIntent) {
 				console.log("Payment successful:", paymentIntent);
+				await createUserOrder(paymentIntent.id);
+				dispatch(clearCart());
+				navigate("/order-confirmation");
 			}
 		} catch (error) {
-			console.error("Error creating payment intent:", error);
+			console.error("Error processing payment:", error);
+			setError("Error processing payment. Please try again.");
+		}
+
+		setProcessing(false);
+	};
+
+	const createUserOrder = async (paymentIntentId: string) => {
+		try {
+			const orderData: CreateOrderData = {
+				products: Object.entries(cartItems).map(([productId, quantity]) => {
+					const product = products.find((p) => p._id === productId);
+					return {
+						productId,
+						quantity,
+						price: product?.price || 0,
+					};
+				}),
+				shippingAddress: shippingInfo,
+				paymentInfo: { paymentMethodId: paymentIntentId },
+				orderTotal: total,
+			};
+			console.log("Sending order data:", orderData);
+			const response = await dispatch(createOrder(orderData)).unwrap();
+			dispatch(setCurrentOrder(response));
+			console.log("Order created:", response);
+			navigate("/order-confirmation", { state: { order: response } });
+		} catch (error) {
+			console.error("Error creating order:", error);
+			if (error instanceof AxiosError) {
+				if (error.response) {
+					console.error("Response data:", error.response.data);
+					console.error("Response status:", error.response.status);
+					console.error("Response headers:", error.response.headers);
+				} else if (error.request) {
+					console.error("No response received:", error.request);
+				} else {
+					console.error("Error setting up request:", error.message);
+				}
+			} else {
+				console.error("Unexpected error:", error);
+			}
+			throw error;
 		}
 	};
 
@@ -83,7 +124,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onNext, onBack, total }) => {
 			</div>
 			<CardElement />
 			{error && <div className="text-red-500">{error}</div>}
-			<button type="submit" disabled={!stripe || processing}>
+			<button type="submit" disabled={!stripe || processing || !clientSecret}>
 				Pay ${total.toFixed(2)}
 			</button>
 		</form>

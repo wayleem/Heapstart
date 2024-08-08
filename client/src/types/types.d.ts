@@ -1,10 +1,12 @@
 declare global {
 	// Base types
 	interface Address {
+		firstName: string;
+		lastName: string;
 		street: string;
 		city: string;
 		state: string;
-		postalCode: string;
+		zipCode: string;
 		country: string;
 	}
 
@@ -58,17 +60,26 @@ declare global {
 			price: number;
 		}>;
 		shippingAddress: Address;
-		paymentInfo: any; // Consider creating a more specific type for paymentInfo
+		paymentInfo: {
+			paymentMethodId: string;
+		};
 		orderTotal: number;
 	}
 
 	interface Order {
 		_id: string;
 		userId: string;
-		products: ProductInOrder[];
+		products: Array<{
+			productId: string;
+			quantity: number;
+			price: number;
+		}>;
 		orderTotal: number;
 		orderDate: string;
 		shippingAddress: Address;
+		paymentInfo: {
+			paymentMethodId: string;
+		};
 		trackingNumber?: string;
 		trackingNumbers: TrackingNumber[];
 		status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";

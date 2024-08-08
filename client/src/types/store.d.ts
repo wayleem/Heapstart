@@ -18,6 +18,7 @@ interface ProductsState {
 
 interface OrderState {
 	orders: Order[];
+	currentOrder: Order | null;
 	status: "idle" | "loading" | "succeeded" | "failed";
 	error: string | null;
 }
@@ -36,4 +37,5 @@ interface RootState {
 	cart: CartState;
 	user: UserState;
 	products: ProductsState;
+	orders: OrderState;
 }

@@ -1,49 +1,43 @@
 import React, { useState } from "react";
 
-interface ShippingFormData {
-	firstName: string;
-	lastName: string;
-	address: string;
-	city: string;
-	state: string;
-	zipCode: string;
-	country: string;
+interface ShippingFormProps {
+	onNext: (data: Address) => void;
 }
 
 const ShippingForm: React.FC<ShippingFormProps> = ({ onNext }) => {
-	const [formData, setFormData] = useState<ShippingFormData>({
+	const [formData, setFormData] = useState<Address>({
 		firstName: "",
 		lastName: "",
-		address: "",
+		street: "",
 		city: "",
 		state: "",
 		zipCode: "",
 		country: "",
 	});
 
-	const [errors, setErrors] = useState<Partial<ShippingFormData>>({});
+	const [errors, setErrors] = useState<Partial<Address>>({});
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
-		if (errors[name as keyof ShippingFormData]) {
+		if (errors[name as keyof Address]) {
 			setErrors((prev) => ({ ...prev, [name]: undefined }));
 		}
 	};
 
 	const validateForm = (): boolean => {
-		const newErrors: Partial<ShippingFormData> = {};
+		const newErrors: Partial<Address> = {};
 		let isValid = true;
 
 		Object.entries(formData).forEach(([key, value]) => {
 			if (!value.trim()) {
-				newErrors[key as keyof ShippingFormData] = "This field is required";
+				newErrors[key as keyof Address] = "This field is required";
 				isValid = false;
 			}
 		});
 
 		if (formData.zipCode && !/^\d{5}(-\d{4})?$/.test(formData.zipCode)) {
-			newErrors.zipCode = "Invalid ZIP code format";
+			newErrors.zipCode = "Invalid postal code format";
 			isValid = false;
 		}
 
@@ -87,14 +81,14 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onNext }) => {
 			<div>
 				<input
 					type="text"
-					name="address"
-					value={formData.address}
+					name="street"
+					value={formData.street}
 					onChange={handleChange}
-					placeholder="Address"
-					className={`p-2 border rounded w-full ${errors.address ? "border-red-500" : ""}`}
+					placeholder="Street Address"
+					className={`p-2 border rounded w-full ${errors.street ? "border-red-500" : ""}`}
 					required
 				/>
-				{errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
+				{errors.street && <p className="text-red-500 text-sm mt-1">{errors.street}</p>}
 			</div>
 			<div>
 				<input
@@ -126,7 +120,7 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onNext }) => {
 					name="zipCode"
 					value={formData.zipCode}
 					onChange={handleChange}
-					placeholder="ZIP Code"
+					placeholder="Postal Code"
 					className={`p-2 border rounded w-full ${errors.zipCode ? "border-red-500" : ""}`}
 					required
 				/>

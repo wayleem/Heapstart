@@ -1,31 +1,25 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { AppDispatch } from "../store";
-import { createOrder } from "../store/slices/orderSlice";
-import { clearCart } from "../store/slices/cartSlice";
-import ShippingForm from "../components/ShippingForm";
-import PaymentForm from "../components/PaymentForm";
-import OrderReview from "../components/OrderReview";
+import { useSelector } from "react-redux";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+import ShippingForm from "../components/ShippingForm";
+import PaymentForm from "../components/PaymentForm";
 
 const Checkout: React.FC = () => {
 	const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-
 	const [step, setStep] = useState(1);
 	const [shippingInfo, setShippingInfo] = useState<Address>({
+		firstName: "",
+		lastName: "",
 		street: "",
 		city: "",
 		state: "",
-		postalCode: "",
+		zipCode: "",
 		country: "",
 	});
-	const [paymentInfo, setPaymentInfo] = useState({});
+
 	const cartItems = useSelector((state: RootState) => state.cart.items);
 	const products = useSelector((state: RootState) => state.products.items);
-	const dispatch = useDispatch<AppDispatch>();
-	const navigate = useNavigate();
 
 	const cartProducts = Object.entries(cartItems)
 		.map(([productId, quantity]) => {
@@ -40,31 +34,6 @@ const Checkout: React.FC = () => {
 		}, 0);
 	};
 
-	const handleSubmitOrder = async () => {
-		try {
-			const orderData: CreateOrderData = {
-				products: cartProducts.map(({ product, quantity }) => ({
-					productId: product?._id ?? "", // Use empty string as fallback
-					quantity,
-					price: product?.price ?? 0, // Use 0 as fallback
-				})),
-				shippingAddress: shippingInfo,
-				paymentInfo,
-				orderTotal: calculateTotal(),
-			};
-			const resultAction = await dispatch(createOrder(orderData));
-			if (createOrder.fulfilled.match(resultAction)) {
-				dispatch(clearCart());
-				navigate("/order-confirmation", { state: { orderId: resultAction.payload._id } });
-			} else {
-				// Handle error
-				console.error("Failed to create order:", resultAction.error);
-			}
-		} catch (error) {
-			console.error("Error submitting order:", error);
-		}
-	};
-
 	const renderStep = () => {
 		switch (step) {
 			case 1:
@@ -77,27 +46,7 @@ const Checkout: React.FC = () => {
 					/>
 				);
 			case 2:
-				return (
-					<PaymentForm
-						onNext={(data) => {
-							setPaymentInfo(data);
-							setStep(3);
-						}}
-						onBack={() => setStep(1)}
-						total={calculateTotal()}
-					/>
-				);
-			case 3:
-				return (
-					<OrderReview
-						shippingAddress={shippingInfo}
-						paymentInfo={paymentInfo}
-						products={cartProducts}
-						total={calculateTotal()}
-						onSubmit={handleSubmitOrder}
-						onBack={() => setStep(2)}
-					/>
-				);
+				return <PaymentForm total={calculateTotal()} shippingInfo={shippingInfo} cartItems={cartItems} />;
 			default:
 				return null;
 		}

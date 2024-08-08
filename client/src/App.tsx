@@ -11,9 +11,11 @@ import PasswordReset from "@pages/PasswordReset";
 import Store from "@pages/Store";
 import Faq from "@pages/Faq";
 import Checkout from "@pages/Checkout";
+import OrderHistory from "@pages/OrderHistory";
 import { fetchCart } from "@store/slices/cartSlice";
 import { selectIsAuthenticated } from "./store/slices/userSlice";
 import { fetchProducts, selectProductsStatus } from "./store/slices/productsSlice";
+import OrderConfirmation from "@pages/OrderConfirmation";
 
 function App() {
 	const dispatch = useAppDispatch();
@@ -42,6 +44,8 @@ function App() {
 					<Route path="/store" element={<Store />} />
 					<Route path="/faq" element={<Faq />} />
 					<Route path="/checkout" element={<Checkout />} />
+					<Route path="/order-history" element={<OrderHistory />} />
+					<Route path="/order-confirmation" element={<OrderConfirmation />} />
 				</Route>
 			</Routes>
 		</Router>

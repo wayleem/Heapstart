@@ -5,26 +5,27 @@ import { sendOrderConfirmationEmail } from "../services/emailService";
 
 export const createOrder = async (req: Request, res: Response) => {
 	try {
-		const { products, shippingAddress, paymentInfo } = req.body;
+		const { products, shippingAddress, paymentInfo, orderTotal } = req.body;
 		const userId = req.userId; // Assuming you set this in your auth middleware
+
+		console.log("Received order data:", { products, shippingAddress, paymentInfo, orderTotal, userId });
 
 		const newOrder = new Order({
 			userId,
 			products,
 			shippingAddress,
-			orderTotal: products.reduce((total: number, item: any) => total + item.price * item.quantity, 0),
-			status: "pending",
+			paymentInfo,
+			orderTotal,
+			status: "processing",
 		});
 
-		await newOrder.save();
+		const savedOrder = await newOrder.save();
+		console.log("Saved order:", savedOrder);
 
-		// Send order confirmation email
-		await sendOrderConfirmationEmail(req.user.email, newOrder);
-
-		res.status(201).json(newOrder);
+		res.status(201).json(savedOrder);
 	} catch (error) {
 		console.error("Error creating order:", error);
-		res.status(500).json({ message: "Error creating order", error });
+		res.status(500).json({ message: "Error creating order", error: error.message });
 	}
 };
 
@@ -37,7 +38,14 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
 };
 
 export const getUserOrders = async (req: Request, res: Response) => {
-	// Implement get user orders logic
+	try {
+		const userId = req.userId; // Assuming you have middleware that sets userId
+		const orders = await Order.find({ userId }).sort({ createdAt: -1 });
+		res.json(orders);
+	} catch (error) {
+		console.error("Error fetching user orders:", error);
+		res.status(500).json({ message: "Error fetching user orders", error });
+	}
 };
 
 // Add more order-related controller functions as needed

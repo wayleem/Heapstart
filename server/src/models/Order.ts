@@ -2,13 +2,32 @@ import { Schema, model, Model, Document } from "mongoose";
 
 export interface IOrder extends Document {
 	userId: Schema.Types.ObjectId;
-	products: ProductInOrder[];
+	products: Array<{
+		productId: Schema.Types.ObjectId;
+		quantity: number;
+		price: number;
+	}>;
 	orderTotal: number;
-	orderDate: Date;
-	shippingAddress: Address;
-	trackingNumber?: string;
-	trackingNumbers: TrackingNumber[];
+	shippingAddress: {
+		firstName: string;
+		lastName: string;
+		street: string;
+		city: string;
+		state: string;
+		zipCode: string;
+		country: string;
+	};
+	paymentInfo: {
+		paymentMethodId: string;
+	};
 	status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+	trackingNumber?: string;
+	trackingNumbers?: Array<{
+		productId: Schema.Types.ObjectId;
+		trackingNumber: string;
+	}>;
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 const OrderSchema = new Schema<IOrder>(
@@ -22,32 +41,36 @@ const OrderSchema = new Schema<IOrder>(
 			},
 		],
 		orderTotal: { type: Number, required: true, min: 0 },
-		orderDate: { type: Date, default: Date.now, immutable: true },
 		shippingAddress: {
+			firstName: { type: String, required: true, trim: true },
+			lastName: { type: String, required: true, trim: true },
 			street: { type: String, required: true, trim: true },
 			city: { type: String, required: true, trim: true },
 			state: { type: String, required: true, trim: true },
-			postalCode: { type: String, required: true, trim: true },
+			zipCode: { type: String, required: true, trim: true },
 			country: { type: String, required: true, trim: true },
 		},
-		trackingNumber: { type: String },
-		trackingNumbers: [
-			{
-				productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
-				trackingNumber: { type: String, required: true, trim: true },
-			},
-		],
+		paymentInfo: {
+			paymentMethodId: { type: String, required: true },
+		},
 		status: {
 			type: String,
 			enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
 			required: true,
 			default: "pending",
 		},
+		trackingNumber: { type: String },
+		trackingNumbers: [
+			{
+				productId: { type: Schema.Types.ObjectId, ref: "Product" },
+				trackingNumber: { type: String, trim: true },
+			},
+		],
 	},
 	{ timestamps: true },
 );
 
-OrderSchema.index({ userId: 1, orderDate: -1 });
+OrderSchema.index({ userId: 1, createdAt: -1 });
 
 const Order: Model<IOrder> = model<IOrder>("Order", OrderSchema);
 
