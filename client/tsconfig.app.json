@@ -19,11 +19,14 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true,
 		"paths": {
-			"@components/*": ["src/components/*"],
-			"@pages/*": ["src/pages/*"],
-			"@store/*": ["src/store/*"],
-			"@hooks/*": ["src/hooks/*"],
-			"@assets/*": ["src/assets/*"]
+			"@components/*": ["./src/components/*"],
+			"@pages/*": ["./src/pages/*"],
+			"@store/*": ["./src/store/*"],
+			"@hooks/*": ["./src/hooks/*"],
+			"@assets/*": ["./src/assets/*"],
+			"@api/*": ["./src/api/*"],
+			"@utils/*": ["./src/utils/*"],
+			"@types": ["./src/types"]
 		}
 	},
 	"include": ["src"]

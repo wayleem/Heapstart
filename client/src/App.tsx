@@ -1,21 +1,22 @@
 import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./store";
-import Layout from "@components/Layout";
-import Home from "@pages/Home";
-import Contact from "@pages/Contact";
-import Registration from "@pages/Registration";
-import Login from "@pages/Login";
-import Profile from "@pages/Profile";
-import PasswordReset from "@pages/PasswordReset";
-import Store from "@pages/Store";
-import Faq from "@pages/Faq";
-import Checkout from "@pages/Checkout";
-import OrderHistory from "@pages/OrderHistory";
-import { fetchCart } from "@store/slices/cartSlice";
+import Layout from "@components/layout/Layout";
+import Home from "@pages/home/Home";
+import Contact from "@pages/info/Contact";
+import Registration from "@pages/auth/Registration";
+import Login from "@pages/auth/Login";
+import Profile from "@pages/user/Profile";
+import PasswordReset from "@pages/auth/PasswordReset";
+import Store from "@pages/store/Store";
+import Faq from "@pages/info/Faq";
+import Checkout from "@pages/checkout/Checkout";
+import OrderHistory from "@pages/orders/OrderHistory";
 import { selectIsAuthenticated } from "./store/slices/userSlice";
-import { fetchProducts, selectProductsStatus } from "./store/slices/productsSlice";
-import OrderConfirmation from "@pages/OrderConfirmation";
+import { selectProductsStatus } from "./store/slices/productSlice";
+import OrderConfirmation from "@pages/checkout/OrderConfirmation";
+import { fetchCart } from "@store/thunks/cartThunks";
+import { fetchProducts } from "@store/thunks/productThunks";
 
 function App() {
 	const dispatch = useAppDispatch();

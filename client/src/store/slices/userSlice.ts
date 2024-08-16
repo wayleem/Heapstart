@@ -1,13 +1,7 @@
-// src/store/slices/userSlice.ts
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { clearCart, fetchCart } from "./cartSlice";
-import { api } from "@hooks/apiHooks";
-import { AppDispatch } from "..";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { login, logout, fetchUserProfile } from "../thunks/userThunks";
+import { RootState, UserPayload, UserState } from "@types";
 
-// Types
-type UserPayload = Partial<Omit<UserState, "isAuthenticated" | "status">>;
-
-// Initial state
 const initialState: UserState = {
 	id: null,
 	email: null,
@@ -18,52 +12,6 @@ const initialState: UserState = {
 	error: null,
 };
 
-interface LoginCredentials {
-	email: string;
-	password: string;
-}
-
-interface LoginResponse {
-	userId: string;
-	email: string;
-	token: string;
-}
-
-export const logout = createAsyncThunk<void, void, { state: RootState; dispatch: AppDispatch }>(
-	"user/logout",
-	async (_, { dispatch }) => {
-		try {
-			await api.post("/api/auth/logout");
-		} catch (error) {
-			console.error("Logout error:", error);
-		} finally {
-			// Always clear the cart, even if the logout request fails
-			dispatch(clearCart());
-			dispatch(clearUser());
-		}
-	},
-);
-
-export const login = createAsyncThunk<
-	{ id: string; email: string; accessToken: string },
-	LoginCredentials,
-	{ state: RootState; dispatch: AppDispatch }
->("user/login", async (credentials, { dispatch }) => {
-	try {
-		const response = await api.post<LoginResponse>("/api/auth/login", credentials);
-		const { userId, email, token } = response.data;
-
-		// Fetch the user's cart after successful login
-		await dispatch(fetchCart());
-
-		return { id: userId, email, accessToken: token };
-	} catch (error) {
-		// Handle error
-		throw error;
-	}
-});
-
-// Slice
 const userSlice = createSlice({
 	name: "user",
 	initialState,
@@ -84,21 +32,28 @@ const userSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(logout.pending, (state) => {
+			.addCase(login.pending, (state) => {
 				state.status = "loading";
 			})
-			.addCase(logout.fulfilled, () => initialState)
-			.addCase(logout.rejected, (state, action) => {
+			.addCase(login.fulfilled, (state, action) => {
+				state.id = action.payload.id;
+				state.email = action.payload.email;
+				state.accessToken = action.payload.accessToken;
+				state.isAuthenticated = true;
+				state.status = "succeeded";
+			})
+			.addCase(login.rejected, (state, action) => {
 				state.status = "failed";
-				state.error = action.error.message ?? "Logout failed";
+				state.error = action.payload ?? "Login failed";
+			})
+			.addCase(logout.fulfilled, () => initialState)
+			.addCase(fetchUserProfile.fulfilled, (state, action) => {
+				state.profile = action.payload;
 			});
 	},
 });
 
-// Actions
 export const { setUser, clearUser, setError } = userSlice.actions;
-
-// Selectors
 export const selectUser = (state: RootState) => state.user;
 export const selectIsAuthenticated = (state: RootState) => state.user.isAuthenticated;
 

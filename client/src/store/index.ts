@@ -4,13 +4,14 @@ import storage from "redux-persist/lib/storage";
 import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
 import cartReducer from "./slices/cartSlice";
 import userReducer from "./slices/userSlice";
-import productsReducer from "./slices/productsSlice";
+import productReducer from "./slices/productSlice";
 import orderReducer from "./slices/orderSlice";
+import { RootState } from "@types";
 
 const rootReducer = combineReducers({
 	cart: cartReducer,
 	user: userReducer,
-	products: productsReducer,
+	product: productReducer,
 	orders: orderReducer,
 });
 
