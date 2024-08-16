@@ -25,3 +25,19 @@ export interface RegistrationErrorState {
 		country: string;
 	};
 }
+
+export interface LoginCredentials {
+	email: string;
+	password: string;
+}
+
+export interface RegisterUserData {
+	email: string;
+	password: string;
+	profile: {
+		firstName: string;
+		lastName: string;
+		phone?: string;
+		address: Omit<Address, "firstName" | "lastName">;
+	};
+}
