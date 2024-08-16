@@ -4,6 +4,7 @@ import { setUser } from "@store/slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "@api/endpoints";
 import { Address, RegistrationErrorState, RegistrationFormData } from "@types";
+import { register } from "@store/thunks/userThunks";
 
 export const initialRegistrationFormData: RegistrationFormData = {
 	firstName: "",
@@ -114,8 +115,8 @@ export const useRegistrationForm = () => {
 		if (!validateStep(step, formData, setErrors)) return;
 
 		setIsLoading(true);
-		try {
-			const response = await authApi.register({
+		const result = await dispatch(
+			register({
 				email: formData.email,
 				password: formData.password,
 				profile: {
@@ -124,35 +125,16 @@ export const useRegistrationForm = () => {
 					phone: formData.phone,
 					address: {
 						...formData.address,
-						firstName: formData.firstName,
-						lastName: formData.lastName,
 					},
 				},
-			});
+			}),
+		).unwrap();
 
-			dispatch(
-				setUser({
-					id: response.userId,
-					email: formData.email,
-					accessToken: response.token,
-					profile: {
-						firstName: formData.firstName,
-						lastName: formData.lastName,
-						phone: formData.phone,
-						address: {
-							...formData.address,
-							firstName: formData.firstName,
-							lastName: formData.lastName,
-						},
-					},
-				}),
-			);
-
-			setIsLoading(false);
+		setIsLoading(false);
+		if (result.id) {
 			navigate("/");
-		} catch (err) {
-			setIsLoading(false);
-			setErrors((prev) => ({ ...prev, email: "An error occurred during registration." }));
+		} else {
+			setErrors((prev) => ({ ...prev, email: "Registration failed. Please try again." }));
 		}
 	};
 

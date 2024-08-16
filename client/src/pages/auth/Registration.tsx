@@ -1,12 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@store/index";
-import { setUser } from "@store/slices/userSlice";
 import { RegistrationSteps } from "@components/auth/RegistrationSteps";
 import { useRegistrationForm } from "@hooks/auth/useRegistrationForm";
-import { authApi } from "@api/endpoints";
-import { handleApiError } from "@utils/errorUtils";
 import { RegistrationErrorState } from "@types";
+import { register } from "@store/thunks/userThunks";
 
 const Registration: React.FC = () => {
 	const dispatch = useAppDispatch();
@@ -17,8 +15,9 @@ const Registration: React.FC = () => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (!validateStep(step, formData, setErrors)) return;
-		try {
-			const response = await authApi.register({
+
+		const result = await dispatch(
+			register({
 				email: formData.email,
 				password: formData.password,
 				profile: {
@@ -27,24 +26,16 @@ const Registration: React.FC = () => {
 					phone: formData.phone,
 					address: formData.address,
 				},
-			});
-			dispatch(
-				setUser({
-					id: response.userId,
-					email: formData.email,
-					accessToken: response.token,
-					profile: {
-						firstName: formData.firstName,
-						lastName: formData.lastName,
-						phone: formData.phone,
-						address: formData.address,
-					},
-				}),
-			);
+			}),
+		).unwrap();
+
+		if (result.id) {
 			navigate("/");
-		} catch (err) {
-			const errorMessage = handleApiError(err);
-			setErrors((prevErrors: RegistrationErrorState) => ({ ...prevErrors, email: errorMessage }));
+		} else {
+			setErrors((prevErrors: RegistrationErrorState) => ({
+				...prevErrors,
+				email: "Registration failed. Please try again.",
+			}));
 		}
 	};
 

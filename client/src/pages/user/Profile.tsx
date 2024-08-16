@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@store/index";
-import { selectUser, setUser } from "@store/slices/userSlice";
-import { userApi } from "@api/endpoints";
-import { handleApiError } from "@utils/errorUtils";
+import { selectUser } from "@store/slices/userSlice";
+import { fetchUserProfile } from "@store/thunks/userThunks";
 
 const Profile: React.FC = () => {
 	const navigate = useNavigate();
@@ -13,18 +12,10 @@ const Profile: React.FC = () => {
 	useEffect(() => {
 		if (!user.isAuthenticated) {
 			navigate("/login");
-		} else if (!user.profile && user.accessToken) {
-			const fetchUserProfile = async () => {
-				try {
-					const profile = await userApi.getProfile();
-					dispatch(setUser({ profile }));
-				} catch (error) {
-					console.error("Error fetching user profile:", handleApiError(error));
-				}
-			};
-			fetchUserProfile();
+		} else if (!user.profile) {
+			dispatch(fetchUserProfile());
 		}
-	}, [user.isAuthenticated, user.profile, user.accessToken, dispatch, navigate]);
+	}, [user.isAuthenticated, user.profile, dispatch, navigate]);
 
 	if (!user.isAuthenticated) {
 		return null;

@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useAppDispatch } from "@store/index";
-import { setUser, setError } from "@store/slices/userSlice";
 import { useNavigate } from "react-router-dom";
-import { authApi } from "@api/endpoints";
+import { login } from "@store/thunks/userThunks";
 
 export const useLoginForm = () => {
 	const dispatch = useAppDispatch();
@@ -21,16 +20,10 @@ export const useLoginForm = () => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setIsLoading(true);
-
-		try {
-			const response = await authApi.login(formData);
-			const { userId, email, token } = response;
-			dispatch(setUser({ id: userId, email, accessToken: token }));
-			setIsLoading(false);
+		const result = await dispatch(login(formData)).unwrap();
+		setIsLoading(false);
+		if (result.id) {
 			navigate("/");
-		} catch (error) {
-			setIsLoading(false);
-			dispatch(setError("Invalid email or password."));
 		}
 	};
 
