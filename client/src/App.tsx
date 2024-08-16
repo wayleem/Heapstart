@@ -12,25 +12,27 @@ import Store from "@pages/store/Store";
 import Faq from "@pages/info/Faq";
 import Checkout from "@pages/checkout/Checkout";
 import OrderHistory from "@pages/orders/OrderHistory";
-import { selectIsAuthenticated } from "./store/slices/userSlice";
+import { selectUser } from "./store/slices/userSlice";
 import { selectProductsStatus } from "./store/slices/productSlice";
 import OrderConfirmation from "@pages/checkout/OrderConfirmation";
 import { fetchCart } from "@store/thunks/cartThunks";
 import { fetchProducts } from "@store/thunks/productThunks";
+import { fetchUserProfile } from "@store/thunks/userThunks";
 
 function App() {
 	const dispatch = useAppDispatch();
-	const isAuthenticated = useAppSelector(selectIsAuthenticated);
+	const user = useAppSelector(selectUser);
 	const productsStatus = useAppSelector(selectProductsStatus);
 
 	useEffect(() => {
-		if (isAuthenticated) {
+		if (user.isAuthenticated && user.accessToken) {
+			dispatch(fetchUserProfile());
 			dispatch(fetchCart());
 			if (productsStatus === "idle") {
 				dispatch(fetchProducts());
 			}
 		}
-	}, [isAuthenticated, dispatch, productsStatus]);
+	}, [user.isAuthenticated, user.accessToken, dispatch, productsStatus]);
 
 	return (
 		<Router>

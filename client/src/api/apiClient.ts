@@ -2,7 +2,7 @@
 
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosRequestConfig } from "axios";
 import { store } from "@store/index";
-import { clearUser } from "@store/slices/userSlice";
+import { clearUser, selectUser } from "@store/slices/userSlice";
 import { clearCart } from "@store/slices/cartSlice";
 
 class ApiClient {
@@ -28,11 +28,10 @@ class ApiClient {
 	private initializeInterceptors() {
 		this.api.interceptors.request.use(
 			(config: InternalAxiosRequestConfig) => {
-				const state = store.getState();
-				const userToken = state.user.accessToken;
-				if (userToken) {
+				const user = selectUser(store.getState());
+				if (user.accessToken) {
 					config.headers = config.headers || {};
-					config.headers.Authorization = `Bearer ${userToken}`;
+					config.headers.Authorization = `Bearer ${user.accessToken}`;
 				}
 				return config;
 			},

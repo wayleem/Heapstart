@@ -34,9 +34,17 @@ export const login = createAsyncThunk<
 		const response = await authApi.login(credentials);
 		const { userId, email, token } = response;
 
+		// Immediately dispatch setUser with the token
+		dispatch(setUser({ id: userId, email, accessToken: token, isAuthenticated: true }));
+
 		// Fetch user profile
-		const profileResponse = await userApi.getProfile();
-		dispatch(setUser({ profile: profileResponse }));
+		try {
+			const profileResponse = await userApi.getProfile();
+			dispatch(setUser({ profile: profileResponse }));
+		} catch (profileErr) {
+			log("error", "Failed to fetch user profile", { error: profileErr });
+			// Don't reject here, as login was successful
+		}
 
 		return { id: userId, email, accessToken: token };
 	} catch (err) {

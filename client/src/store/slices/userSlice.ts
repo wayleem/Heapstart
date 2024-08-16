@@ -16,13 +16,8 @@ const userSlice = createSlice({
 	name: "user",
 	initialState,
 	reducers: {
-		setUser: (state, action: PayloadAction<UserPayload>) => {
-			return {
-				...state,
-				...action.payload,
-				isAuthenticated: true,
-				status: "succeeded",
-			};
+		setUser: (state, action: PayloadAction<Partial<UserState>>) => {
+			return { ...state, ...action.payload };
 		},
 		clearUser: () => initialState,
 		setError: (state, action: PayloadAction<string>) => {

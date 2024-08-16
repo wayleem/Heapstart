@@ -1,7 +1,7 @@
 // src/api/endpoints.ts
 import { apiClient } from "./apiClient";
 import { AxiosRequestConfig } from "axios";
-import { CartItems, Product, Order, Profile, LoginCredentials, RegisterUserData } from "@types"; // Import your types
+import { CartItems, Product, Order, Profile, LoginCredentials, RegisterUserData } from "@types";
 
 export const authApi = {
 	login: (credentials: LoginCredentials) =>
