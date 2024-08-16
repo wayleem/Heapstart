@@ -3,12 +3,27 @@ import { authApi, userApi } from "../../api/endpoints";
 import { handleApiError, log } from "../../utils/errorUtils";
 import { clearCart } from "../slices/cartSlice";
 import { setUser } from "@store/slices/userSlice";
-import { Profile, RootState } from "@types";
+import { LoginCredentials, Profile, RegisterUserData, RootState } from "@types";
 
-interface LoginCredentials {
-	email: string;
-	password: string;
-}
+export const register = createAsyncThunk<
+	{ id: string; email: string; accessToken: string },
+	RegisterUserData,
+	{ rejectValue: string }
+>("user/register", async (userData, { dispatch, rejectWithValue }) => {
+	try {
+		await authApi.register(userData);
+		const loginResult = await dispatch(
+			login({
+				email: userData.email,
+				password: userData.password,
+			}),
+		).unwrap();
+		return loginResult;
+	} catch (err) {
+		const errorMessage = handleApiError(err);
+		return rejectWithValue(errorMessage);
+	}
+});
 
 export const login = createAsyncThunk<
 	{ id: string; email: string; accessToken: string },
