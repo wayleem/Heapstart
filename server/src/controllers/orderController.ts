@@ -1,12 +1,15 @@
 import { Request, Response } from "express";
 import Order from "../models/Order";
-import { OrderErrors } from "../utils/errors";
-import { sendOrderConfirmationEmail } from "../services/emailService";
+import { startSession } from "mongoose";
+import User from "../models/User";
 
 export const createOrder = async (req: Request, res: Response) => {
+	const session = await startSession();
+	session.startTransaction();
+
 	try {
 		const { products, shippingAddress, paymentInfo, orderTotal } = req.body;
-		const userId = req.userId; // Assuming you set this in your auth middleware
+		const userId = req.userId;
 
 		console.log("Received order data:", { products, shippingAddress, paymentInfo, orderTotal, userId });
 
@@ -19,11 +22,28 @@ export const createOrder = async (req: Request, res: Response) => {
 			status: "processing",
 		});
 
-		const savedOrder = await newOrder.save();
+		const savedOrder = await newOrder.save({ session });
 		console.log("Saved order:", savedOrder);
+
+		// Update user's orderHistory
+		const updatedUser = await User.findByIdAndUpdate(
+			userId,
+			{ $push: { orderHistory: savedOrder._id } },
+			{ new: true, session },
+		);
+
+		if (!updatedUser) {
+			throw new Error("User not found");
+		}
+
+		await session.commitTransaction();
+		session.endSession();
 
 		res.status(201).json(savedOrder);
 	} catch (error) {
+		await session.abortTransaction();
+		session.endSession();
+
 		console.error("Error creating order:", error);
 		res.status(500).json({ message: "Error creating order", error: error.message });
 	}
