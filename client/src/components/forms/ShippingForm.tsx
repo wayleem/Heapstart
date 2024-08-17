@@ -1,22 +1,18 @@
 import { Address } from "@types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface ShippingFormProps {
+	initialValues: Address;
 	onNext: (data: Address) => void;
 }
 
-const ShippingForm: React.FC<ShippingFormProps> = ({ onNext }) => {
-	const [formData, setFormData] = useState<Address>({
-		firstName: "",
-		lastName: "",
-		street: "",
-		city: "",
-		state: "",
-		postalCode: "",
-		country: "",
-	});
-
+const ShippingForm: React.FC<ShippingFormProps> = ({ initialValues, onNext }) => {
+	const [formData, setFormData] = useState<Address>(initialValues);
 	const [errors, setErrors] = useState<Partial<Address>>({});
+
+	useEffect(() => {
+		setFormData(initialValues);
+	}, [initialValues]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;

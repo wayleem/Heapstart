@@ -6,7 +6,7 @@ import countryList from "react-select-country-list";
 import Loading from "@components/common/Loading";
 import { RegistrationErrorState, RegistrationFormData } from "@types";
 
-interface RegistrationStepsProps {
+interface RegistrationFormProps {
 	step: number;
 	formData: RegistrationFormData;
 	setFormData: React.Dispatch<React.SetStateAction<RegistrationFormData>>;
@@ -15,9 +15,10 @@ interface RegistrationStepsProps {
 	nextStep: () => void;
 	prevStep: () => void;
 	isLoading: boolean;
+	handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
-export const RegistrationSteps: React.FC<RegistrationStepsProps> = ({
+export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 	step,
 	formData,
 	setFormData,
@@ -26,6 +27,7 @@ export const RegistrationSteps: React.FC<RegistrationStepsProps> = ({
 	nextStep,
 	prevStep,
 	isLoading,
+	handleSubmit,
 }) => {
 	const countryOptions = countryList().getData();
 
@@ -54,7 +56,12 @@ export const RegistrationSteps: React.FC<RegistrationStepsProps> = ({
 		switch (step) {
 			case 1:
 				return (
-					<>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							nextStep();
+						}}
+					>
 						<h2 className="text-2xl font-bold mb-5">Step 1: Your Name</h2>
 						<div className="mb-4">
 							<input
@@ -90,11 +97,16 @@ export const RegistrationSteps: React.FC<RegistrationStepsProps> = ({
 						>
 							Next
 						</button>
-					</>
+					</form>
 				);
 			case 2:
 				return (
-					<>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							nextStep();
+						}}
+					>
 						<h2 className="text-2xl font-bold mb-5">Step 2: Account Details</h2>
 						<p className="mb-4">Hi {formData.firstName}, please enter your email and password.</p>
 						<div className="mb-4">
@@ -127,23 +139,24 @@ export const RegistrationSteps: React.FC<RegistrationStepsProps> = ({
 						</div>
 						<div className="flex justify-between">
 							<button
+								type="button"
 								onClick={prevStep}
 								className="bg-gray-300 text-black p-2 rounded-md hover:bg-gray-400 transition duration-300"
 							>
 								Back
 							</button>
 							<button
-								onClick={nextStep}
+								type="submit"
 								className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-300"
 							>
 								Next
 							</button>
 						</div>
-					</>
+					</form>
 				);
 			case 3:
 				return (
-					<>
+					<form onSubmit={handleSubmit}>
 						<h2 className="text-2xl font-bold mb-5">Step 3: Contact Information</h2>
 						<div className="mb-4">
 							<PhoneInput
@@ -256,7 +269,7 @@ export const RegistrationSteps: React.FC<RegistrationStepsProps> = ({
 								{isLoading ? <Loading size="small" color="text-white" /> : "Register"}
 							</button>
 						</div>
-					</>
+					</form>
 				);
 			default:
 				return null;
