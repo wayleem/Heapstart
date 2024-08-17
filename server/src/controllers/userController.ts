@@ -8,7 +8,7 @@ export const getProfile = async (req: Request, res: Response) => {
 		if (!user) {
 			return res.status(404).json({ type: UserErrors.NO_USER_FOUND });
 		}
-		res.json(user); // Send the entire user object
+		res.json(user.profile);
 	} catch (err) {
 		console.error("Profile fetch error:", err);
 		res.status(500).json({
