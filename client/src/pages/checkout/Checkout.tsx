@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -21,6 +21,15 @@ const Checkout: React.FC = () => {
 
 	const cartItems = useSelector((state: RootState) => state.cart.items);
 	const products = useSelector((state: RootState) => state.product.items);
+	const userProfile = useSelector((state: RootState) => state.user.profile);
+
+	useEffect(() => {
+		if (userProfile && userProfile.address) {
+			setShippingInfo({
+				...userProfile.address,
+			});
+		}
+	}, [userProfile]);
 
 	const cartProducts = Object.entries(cartItems)
 		.map(([productId, quantity]) => {
@@ -40,6 +49,7 @@ const Checkout: React.FC = () => {
 			case 1:
 				return (
 					<ShippingForm
+						initialValues={shippingInfo}
 						onNext={(data) => {
 							setShippingInfo(data);
 							setStep(2);
