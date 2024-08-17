@@ -21,7 +21,6 @@ export interface User {
 export interface UserState {
 	id: string | null;
 	email: string | null;
-	isAuthenticated: boolean;
 	profile: Profile | null;
 	status: RequestStatus;
 	error: string | null;

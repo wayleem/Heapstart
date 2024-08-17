@@ -6,7 +6,6 @@ const initialState: UserState = {
 	id: null,
 	email: null,
 	accessToken: null,
-	isAuthenticated: false,
 	profile: null,
 	status: "idle",
 	error: null,
@@ -34,7 +33,6 @@ const userSlice = createSlice({
 				state.id = action.payload.id;
 				state.email = action.payload.email;
 				state.accessToken = action.payload.accessToken;
-				state.isAuthenticated = true;
 				state.status = "succeeded";
 			})
 			.addCase(login.rejected, (state, action) => {
@@ -50,6 +48,6 @@ const userSlice = createSlice({
 
 export const { setUser, clearUser, setError } = userSlice.actions;
 export const selectUser = (state: RootState) => state.user;
-export const selectIsAuthenticated = (state: RootState) => state.user.isAuthenticated;
+export const selectIsAuthenticated = (state: RootState) => !!state.user.accessToken;
 
 export default userSlice.reducer;

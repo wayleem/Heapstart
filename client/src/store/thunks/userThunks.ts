@@ -2,7 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { authApi, userApi } from "../../api/endpoints";
 import { handleApiError, log } from "../../utils/errorUtils";
 import { clearCart } from "../slices/cartSlice";
-import { setUser } from "@store/slices/userSlice";
+import { selectIsAuthenticated, setUser } from "@store/slices/userSlice";
 import { LoginCredentials, Profile, RegisterUserData, RootState } from "@types";
 
 export const register = createAsyncThunk<
@@ -35,7 +35,7 @@ export const login = createAsyncThunk<
 		const { userId, email, token } = response;
 
 		// Immediately dispatch setUser with the token
-		dispatch(setUser({ id: userId, email, accessToken: token, isAuthenticated: true }));
+		dispatch(setUser({ id: userId, email, accessToken: token }));
 
 		// Fetch user profile
 		try {
@@ -67,10 +67,13 @@ export const logout = createAsyncThunk<void, void, { state: RootState }>("user/l
 export const fetchUserProfile = createAsyncThunk<Profile, void, { state: RootState; rejectValue: string }>(
 	"user/fetchProfile",
 	async (_, { getState, rejectWithValue }) => {
-		const { user } = getState();
-		if (!user.isAuthenticated) {
+		const state = getState();
+		const isAuthenticated = selectIsAuthenticated(state);
+
+		if (!isAuthenticated) {
 			return rejectWithValue("User is not authenticated");
 		}
+
 		try {
 			return await userApi.getProfile();
 		} catch (err) {

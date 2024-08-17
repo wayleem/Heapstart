@@ -10,14 +10,14 @@ const Profile: React.FC = () => {
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
-		if (!user.isAuthenticated) {
+		if (!user.accessToken) {
 			navigate("/login");
 		} else if (!user.profile) {
 			dispatch(fetchUserProfile());
 		}
-	}, [user.isAuthenticated, user.profile, dispatch, navigate]);
+	}, [user.accessToken, user.profile, dispatch, navigate]);
 
-	if (!user.isAuthenticated) {
+	if (!user.accessToken) {
 		return null;
 	}
 
