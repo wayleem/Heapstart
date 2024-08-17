@@ -2,6 +2,8 @@ import { Types } from "mongoose";
 
 declare global {
 	interface Address {
+		firstName: string;
+		lastName: string;
 		street: string;
 		city: string;
 		state: string;
@@ -13,7 +15,7 @@ declare global {
 		firstName: string;
 		middleName?: string;
 		lastName: string;
-		phone?: string;
+		phone: string;
 		address: Address;
 	}
 

@@ -15,15 +15,7 @@ export interface RegistrationErrorState {
 	email: string;
 	password: string;
 	phone: string;
-	address: {
-		firstName: string;
-		lastName: string;
-		street: string;
-		city: string;
-		state: string;
-		postalCode: string;
-		country: string;
-	};
+	address: Address;
 }
 
 export interface LoginCredentials {
@@ -38,6 +30,6 @@ export interface RegisterUserData {
 		firstName: string;
 		lastName: string;
 		phone?: string;
-		address: Omit<Address, "firstName" | "lastName">;
+		address: Address;
 	};
 }

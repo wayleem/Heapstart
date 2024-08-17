@@ -43,7 +43,6 @@ export const login = createAsyncThunk<
 			dispatch(setUser({ profile: profileResponse }));
 		} catch (profileErr) {
 			log("error", "Failed to fetch user profile", { error: profileErr });
-			// Don't reject here, as login was successful
 		}
 
 		return { id: userId, email, accessToken: token };
@@ -81,5 +80,3 @@ export const fetchUserProfile = createAsyncThunk<Profile, void, { state: RootSta
 		}
 	},
 );
-
-// Add other user-related thunks here (e.g., register, updateProfile)

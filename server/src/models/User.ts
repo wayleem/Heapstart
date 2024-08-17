@@ -28,6 +28,8 @@ const UserSchema = new Schema<IUser>(
 			lastName: { type: String, required: true, trim: true },
 			phone: { type: String, trim: true },
 			address: {
+				firstName: { type: String, required: true },
+				lastName: { type: String, required: true },
 				street: { type: String, required: true, trim: true },
 				city: { type: String, required: true, trim: true },
 				state: { type: String, required: true, trim: true },

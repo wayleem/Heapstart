@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useAppDispatch } from "@store/index";
-import { setUser } from "@store/slices/userSlice";
 import { useNavigate } from "react-router-dom";
-import { authApi } from "@api/endpoints";
 import { Address, RegistrationErrorState, RegistrationFormData } from "@types";
 import { register } from "@store/thunks/userThunks";
 
@@ -115,26 +113,33 @@ export const useRegistrationForm = () => {
 		if (!validateStep(step, formData, setErrors)) return;
 
 		setIsLoading(true);
-		const result = await dispatch(
-			register({
-				email: formData.email,
-				password: formData.password,
-				profile: {
-					firstName: formData.firstName,
-					lastName: formData.lastName,
-					phone: formData.phone,
-					address: {
-						...formData.address,
+		try {
+			const result = await dispatch(
+				register({
+					email: formData.email,
+					password: formData.password,
+					profile: {
+						firstName: formData.firstName,
+						lastName: formData.lastName,
+						phone: formData.phone,
+						address: {
+							firstName: formData.firstName,
+							lastName: formData.lastName,
+							...formData.address,
+						},
 					},
-				},
-			}),
-		).unwrap();
+				}),
+			).unwrap();
 
-		setIsLoading(false);
-		if (result.id) {
-			navigate("/");
-		} else {
+			if (result.id) {
+				navigate("/");
+			} else {
+				setErrors((prev) => ({ ...prev, email: "Registration failed. Please try again." }));
+			}
+		} catch (error) {
 			setErrors((prev) => ({ ...prev, email: "Registration failed. Please try again." }));
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
