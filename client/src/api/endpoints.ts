@@ -1,7 +1,7 @@
 // src/api/endpoints.ts
 import { apiClient } from "./apiClient";
 import { AxiosRequestConfig } from "axios";
-import { CartItems, Product, Order, Profile, LoginCredentials, RegisterUserData } from "@types";
+import { CartItems, Product, Order, Profile, LoginCredentials, RegisterUserData, CreateOrderData } from "@types";
 
 export const authApi = {
 	login: (credentials: LoginCredentials) =>
@@ -40,8 +40,7 @@ export const productApi = {
 };
 
 export const orderApi = {
-	createOrder: (orderData: Omit<Order, "_id" | "userId" | "createdAt" | "updatedAt">) =>
-		apiClient.post<Order>("/api/orders", orderData),
+	createOrder: (orderData: CreateOrderData) => apiClient.post<Order>("/api/orders", orderData),
 	getUserOrders: () => apiClient.get<Order[]>("/api/orders/user"),
 	getOrder: (id: string) => apiClient.get<Order>(`/api/orders/${id}`),
 };

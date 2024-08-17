@@ -8,15 +8,7 @@ export interface IOrder extends Document {
 		price: number;
 	}>;
 	orderTotal: number;
-	shippingAddress: {
-		firstName: string;
-		lastName: string;
-		street: string;
-		city: string;
-		state: string;
-		postalCode: string;
-		country: string;
-	};
+	shippingAddress: Address;
 	paymentInfo: {
 		paymentMethodId: string;
 	};
