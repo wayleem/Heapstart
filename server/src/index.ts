@@ -6,13 +6,8 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import connectDB from "./config/database";
-import { userRouter } from "./routes/userRoutes";
-import { authRouter } from "./routes/authRoutes";
-import { adminRouter } from "./routes/adminRoutes";
-import { productRouter } from "./routes/productRoutes";
-import { orderRouter } from "./routes/orderRoutes";
+import routes from "./routes";
 import { errorHandler } from "./middleware/errorHandler";
-import { paymentRouter } from "./routes/paymentRoutes";
 
 const app = express();
 
@@ -28,12 +23,7 @@ app.use(
 );
 
 // Routes
-app.use("/api/auth", authRouter);
-app.use("/api/users", userRouter);
-app.use("/api/admin", adminRouter);
-app.use("/api/products", productRouter);
-app.use("/api/payment", paymentRouter);
-app.use("/api/orders", orderRouter);
+app.use("/api", routes);
 
 // Error handling middleware
 app.use(errorHandler);
@@ -57,9 +47,3 @@ process.on("SIGINT", () => {
 	console.log("Gracefully shutting down");
 	process.exit(0);
 });
-
-/*
-curl -X POST http://localhost:3001/user/register \
-     -H "Content-Type: application/json" \
-     -d '{"username": "testuser", "password": "testpassword"}'
- */
