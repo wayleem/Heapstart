@@ -3,5 +3,6 @@
 	"outputFile": "./admin.txt",
 	"include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
 	"ignore": ["**/*.test.ts", "**/*.spec.js", "**/*.cjs", "**/*.config.js", "**/*.config.ts", "node_modules/**"],
-	"watch": false
+	"watch": false,
+	"verbose": false
 }

@@ -1,11 +1,10 @@
 // Header.tsx
-import React from "react";
 import { BellIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { useDispatch } from "react-redux";
-import { logout } from "../store/slices/adminSlice";
+import { useAppDispatch } from "@store/index";
+import { logout } from "@store/thunks/adminThunks";
 
 const Header = () => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const handleLogout = () => {
 		dispatch(logout());

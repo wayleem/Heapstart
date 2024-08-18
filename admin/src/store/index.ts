@@ -1,10 +1,22 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
+import {
+	persistStore,
+	persistReducer,
+	FLUSH,
+	REHYDRATE,
+	PAUSE,
+	PERSIST,
+	PURGE,
+	REGISTER,
+	PersistConfig,
+} from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import adminReducer from "./slices/adminSlice";
-import productReducer from "./slices/productsSlice";
+import productReducer from "./slices/productSlice";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { RootState } from "@types";
 
-const persistConfig = {
+const persistConfig: PersistConfig<RootState> = {
 	key: "root",
 	storage,
 	whitelist: ["admin"], // only admin will be persisted
@@ -12,7 +24,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
 	admin: adminReducer,
-	products: productReducer,
+	product: productReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -29,5 +41,6 @@ export const store = configureStore({
 
 export const persistor = persistStore(store);
 
-export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

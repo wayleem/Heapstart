@@ -1,47 +1,32 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginAdmin } from "../../api/adminApi";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { login, logout } from "../thunks/adminThunks";
+import { AdminState } from "@types";
 
-export const login = createAsyncThunk(
-	"admin/login",
-	async ({ username, password }: { username: string; password: string }) => {
-		const response = await loginAdmin(username, password);
-		return response.data;
-	},
-);
+const initialState: AdminState = {
+	isAuthenticated: false,
+	username: null,
+	error: null,
+};
 
 const adminSlice = createSlice({
 	name: "admin",
-	initialState: {
-		admin: null,
-		token: null,
-		isAuthenticated: false,
-		status: "idle",
-		error: null as string | null,
-	},
-	reducers: {
-		logout: (state) => {
-			state.admin = null;
-			state.token = null;
-			state.isAuthenticated = false;
-		},
-	},
+	initialState,
+	reducers: {},
 	extraReducers: (builder) => {
 		builder
-			.addCase(login.pending, (state) => {
-				state.status = "loading";
-			})
-			.addCase(login.fulfilled, (state, action) => {
-				state.admin = action.payload.admin;
-				state.token = action.payload.token;
+			.addCase(login.fulfilled, (state, action: PayloadAction<{ username: string }>) => {
 				state.isAuthenticated = true;
-				state.status = "succeeded";
+				state.username = action.payload.username;
+				state.error = null;
 			})
 			.addCase(login.rejected, (state, action) => {
-				state.status = "failed";
-				state.error = action.error.message || "Login Failed";
+				state.error = action.error.message || "Login failed";
+			})
+			.addCase(logout.fulfilled, (state) => {
+				state.isAuthenticated = false;
+				state.username = null;
 			});
 	},
 });
 
-export const { logout } = adminSlice.actions;
 export default adminSlice.reducer;

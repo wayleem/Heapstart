@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchProducts, removeProduct } from "../store/slices/productsSlice";
-import { RootState, AppDispatch } from "../store";
 import { PencilIcon, TrashIcon, PlusIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { useAppDispatch } from "@store/index";
+import { RootState } from "@types";
+import { fetchProducts, removeProduct } from "@store/thunks/productThunks";
 
 const ProductList: React.FC = () => {
-	const dispatch = useDispatch<AppDispatch>();
-	const products = useSelector((state: RootState) => state.products.products);
-	const status = useSelector((state: RootState) => state.products.status);
+	const dispatch = useAppDispatch();
+	const products = useSelector((state: RootState) => state.product.items);
+	const status = useSelector((state: RootState) => state.product.status);
 	const [searchTerm, setSearchTerm] = useState("");
 
 	useEffect(() => {

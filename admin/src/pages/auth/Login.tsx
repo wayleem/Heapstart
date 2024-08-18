@@ -1,15 +1,16 @@
+import { useAppDispatch } from "@store/index";
+import { login } from "@store/thunks/adminThunks";
+import { RootState } from "@types";
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login } from "../store/slices/adminSlice";
-import { AppDispatch, RootState } from "../store";
 
 const Login: React.FC = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
-	const dispatch = useDispatch<AppDispatch>();
+	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
-	const { isAuthenticated, status, error } = useSelector((state: RootState) => state.admin);
+	const { isAuthenticated, error } = useSelector((state: RootState) => state.admin);
 
 	React.useEffect(() => {
 		if (isAuthenticated) {

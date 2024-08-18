@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchProducts, removeProduct } from "../store/slices/productsSlice";
-import { RootState, AppDispatch } from "../store";
-import ProductForm from "../components/ProductForm";
+import { useAppDispatch } from "@store/index";
+import ProductForm from "@components/forms/ProductForm";
+import { Product, RootState } from "@types";
+import { fetchProducts, removeProduct } from "@store/thunks/productThunks";
 
 const ProductManagement: React.FC = () => {
-	const dispatch = useDispatch<AppDispatch>();
-	const products = useSelector((state: RootState) => state.products.products);
-	const status = useSelector((state: RootState) => state.products.status);
-	const error = useSelector((state: RootState) => state.products.error);
+	const dispatch = useAppDispatch();
+	const products = useSelector((state: RootState) => state.product.items);
+	const status = useSelector((state: RootState) => state.product.status);
+	const error = useSelector((state: RootState) => state.product.error);
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
 	useEffect(() => {

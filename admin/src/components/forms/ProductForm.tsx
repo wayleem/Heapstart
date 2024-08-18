@@ -1,97 +1,25 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { createProduct, updateProduct, getProduct } from "../api/adminApi";
+import { useProductForm } from "@hooks/useProductForm";
+import Loading from "@components/common/Loading";
 
-interface ProductFormProps {
-	product?: Product | null;
-	onClose: () => void;
-}
-
-const ProductForm: React.FC<ProductFormProps> = ({ product: initialProduct, onClose }) => {
-	const [formData, setFormData] = useState<Product>({
-		_id: "",
-		name: "",
-		description: "",
-		price: 0,
-		supplier_id: "",
-		supplier_cost: 0,
-		supplier_link: "",
-		category: "",
-		images: [],
-		isActive: true,
-	});
-
-	const [imageFiles, setImageFiles] = useState<File[]>([]);
-	const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-
+const ProductForm: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
+	const { formData, imagePreviews, status, handleChange, handleImageChange, handleSubmit, removeImage } =
+		useProductForm(id);
 
-	useEffect(() => {
-		if (id) {
-			fetchProduct(id);
-		} else if (initialProduct) {
-			setFormData(initialProduct);
-			setImagePreviews(initialProduct.images);
-		}
-	}, [id, initialProduct]);
-
-	const fetchProduct = async (productId: string) => {
-		try {
-			const response = await getProduct(productId);
-			setFormData(response.data);
-			setImagePreviews(response.data.images);
-		} catch (error) {
-			console.error("Failed to fetch product:", error);
-		}
+	const onSubmit = async (e: React.FormEvent) => {
+		await handleSubmit(e);
+		navigate("/products");
 	};
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		const { name, value } = e.target;
-		setFormData((prev) => ({ ...prev, [name]: value }));
-	};
-
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files) {
-			const files = Array.from(e.target.files);
-			setImageFiles(files);
-
-			const previews = files.map((file) => URL.createObjectURL(file));
-			setImagePreviews(previews);
-		}
-	};
-
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		try {
-			const productData = new FormData();
-			Object.entries(formData).forEach(([key, value]) => {
-				if (key !== "images" && key !== "_id") {
-					productData.append(key, value.toString());
-				}
-			});
-			imageFiles.forEach((file) => {
-				productData.append("images", file);
-			});
-			if (id) {
-				await updateProduct(id, productData);
-			} else {
-				await createProduct(productData);
-			}
-			onClose();
-			navigate("/");
-		} catch (error) {
-			console.error("Failed to save product:", error.response?.data || error.message);
-		}
-	};
-
-	const removeImage = useCallback((index: number) => {
-		setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-		setImageFiles((prev) => prev.filter((_, i) => i !== index));
-	}, []);
+	if (status === "loading") {
+		return <Loading />;
+	}
 
 	return (
-		<form onSubmit={handleSubmit} className="space-y-4">
+		<form onSubmit={onSubmit} className="space-y-4">
 			<h2 className="text-2xl font-semibold mb-4">{id ? "Edit Product" : "Add Product"}</h2>
 			<div>
 				<label htmlFor="name" className="block text-sm font-medium text-gray-700">
