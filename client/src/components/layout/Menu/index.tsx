@@ -53,7 +53,6 @@ const Menu: React.FC<MenuProps> = ({ closeMenu }) => {
 				<CartSection
 					isCartExpanded={isCartExpanded}
 					toggleCart={toggleCart}
-					isLoading={isLoading}
 					currentPage={currentPage}
 					setCurrentPage={setCurrentPage}
 					handleLinkClick={handleLinkClick}

@@ -9,7 +9,6 @@ import { useCart } from "@hooks/cart/useCart";
 interface CartSectionProps {
 	isCartExpanded: boolean;
 	toggleCart: () => void;
-	isLoading: boolean;
 	currentPage: number;
 	setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 	handleLinkClick: (isCartLink: boolean) => void;
@@ -18,17 +17,16 @@ interface CartSectionProps {
 const CartSection: React.FC<CartSectionProps> = ({
 	isCartExpanded,
 	toggleCart,
-	isLoading,
 	currentPage,
 	setCurrentPage,
 	handleLinkClick,
 }) => {
 	const { cartProducts, handleRemoveFromCart, calculateTotal } = useCart();
-
 	const itemsPerPage = 10;
 	const totalPages = Math.ceil(cartProducts.length / itemsPerPage);
 	const displayedItems = cartProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 	const cartTotal = calculateTotal();
+	const isCartEmpty = cartProducts.length === 0;
 
 	return (
 		<>
@@ -54,45 +52,45 @@ const CartSection: React.FC<CartSectionProps> = ({
 						className="overflow-hidden"
 					>
 						<div className="py-2 px-4 space-y-4">
-							{isLoading ? (
-								<p>Loading cart...</p>
-							) : displayedItems.length > 0 ? (
-								displayedItems.map(({ product, quantity }) =>
-									product ? (
-										<CartItem
-											key={product._id}
-											product={product}
-											quantity={quantity}
-											onRemove={() => handleRemoveFromCart(product._id)}
-										/>
-									) : (
-										<p>Loading product...</p>
-									),
-								)
+							{isCartEmpty ? (
+								<p className="text-center text-gray-500">Your cart is empty</p>
 							) : (
-								<p>Your cart is empty</p>
+								<>
+									{displayedItems.map(({ product, quantity }) =>
+										product ? (
+											<CartItem
+												key={product._id}
+												product={product}
+												quantity={quantity}
+												onRemove={() => handleRemoveFromCart(product._id)}
+											/>
+										) : (
+											<p>Loading product...</p>
+										),
+									)}
+									{totalPages > 1 && (
+										<Pagination
+											currentPage={currentPage}
+											totalPages={totalPages}
+											onPrevious={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+											onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+										/>
+									)}
+									<div className="flex justify-between items-center text-lg font-semibold mt-4 pt-4 border-t border-gray-200">
+										<h3>Total:</h3>
+										<p>${cartTotal.toFixed(2)}</p>
+									</div>
+									<NavItem
+										to="/checkout"
+										icon={<CartIcon className="w-5 h-5" />}
+										isCartLink={true}
+										onClick={() => handleLinkClick(true)}
+										className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors text-center"
+									>
+										Checkout
+									</NavItem>
+								</>
 							)}
-							{totalPages > 1 && (
-								<Pagination
-									currentPage={currentPage}
-									totalPages={totalPages}
-									onPrevious={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-									onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-								/>
-							)}
-							<div className="flex justify-between items-center text-lg font-semibold mt-4 pt-4 border-t border-gray-200">
-								<h3>Total:</h3>
-								<p>${cartTotal.toFixed(2)}</p>
-							</div>
-							<NavItem
-								to="/checkout"
-								icon={<CartIcon className="w-5 h-5" />}
-								isCartLink={true}
-								onClick={() => handleLinkClick(true)}
-								className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors text-center"
-							>
-								Checkout
-							</NavItem>
 						</div>
 					</motion.div>
 				)}

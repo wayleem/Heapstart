@@ -59,7 +59,7 @@ export const updateCart = async (req: Request, res: Response) => {
 			return res.status(404).json({ message: "User not found" });
 		}
 
-		res.json({ cart: updatedUser.cart });
+		res.json(updatedUser.cart);
 	} catch (error) {
 		res.status(500).json({ message: "Error updating cart", error });
 	}
@@ -74,7 +74,7 @@ export const getCart = async (req: Request, res: Response) => {
 			return res.status(404).json({ message: "User not found" });
 		}
 
-		res.json({ cart: user.cart });
+		res.json(user.cart);
 	} catch (error) {
 		res.status(500).json({ message: "Error fetching cart", error });
 	}
