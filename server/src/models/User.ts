@@ -1,5 +1,6 @@
 import { Schema, model, Model, Document, Types } from "mongoose";
 import bcrypt from "bcrypt";
+import { AddressSchema } from "../types/schemas";
 
 export interface IUser extends Document {
 	email: string;
@@ -28,15 +29,7 @@ const UserSchema = new Schema<IUser>(
 			middleName: { type: String, trim: true },
 			lastName: { type: String, required: true, trim: true },
 			phone: { type: String, trim: true },
-			address: {
-				firstName: { type: String, required: true },
-				lastName: { type: String, required: true },
-				street: { type: String, required: true, trim: true },
-				city: { type: String, required: true, trim: true },
-				state: { type: String, required: true, trim: true },
-				postalCode: { type: String, required: true, trim: true },
-				country: { type: String, required: true, trim: true },
-			},
+			address: AddressSchema,
 		},
 		orderHistory: [{ type: Schema.Types.ObjectId, ref: "Order" }],
 		supportTickets: [{ type: Schema.Types.ObjectId, ref: "SupportTicket" }],

@@ -46,6 +46,13 @@ declare global {
 		status?: "open" | "in-progress" | "resolved" | "closed";
 		description?: string;
 	}
+
+	export interface TrackingInfo {
+		productId: Types.ObjectId;
+		carrier: string;
+		trackingNumber: string;
+		trackingLink?: string;
+	}
 }
 
 export {};
