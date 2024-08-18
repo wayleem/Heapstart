@@ -50,7 +50,26 @@ export const createOrder = async (req: Request, res: Response) => {
 };
 
 export const getOrder = async (req: Request, res: Response) => {
-	// Implement get single order logic
+	try {
+		const { id } = req.params; // Get the order ID from the request parameters
+		const userId = req.userId; // Assuming you set this in your auth middleware
+
+		// Find the order by ID and user ID
+		const order = await Order.findOne({ _id: id, userId: userId });
+
+		if (!order) {
+			return res.status(404).json({ message: "Order not found" });
+		}
+
+		// Optionally, you can populate related fields if needed
+		// For example, if you want to include product details:
+		// await order.populate('products.productId').execPopulate();
+
+		res.status(200).json(order);
+	} catch (error) {
+		console.error("Error getting order:", error);
+		res.status(500).json({ message: "Error getting order", error: error.message });
+	}
 };
 
 export const updateOrderStatus = async (req: Request, res: Response) => {
