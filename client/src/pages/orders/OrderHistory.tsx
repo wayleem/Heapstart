@@ -1,25 +1,44 @@
 import React from "react";
 import { useOrderHistory } from "@hooks/order/useOrderHistory";
 import { Order } from "@types";
+import { useNavigate } from "react-router-dom";
 
 // Skeleton Loader Component
 const SkeletonLoader: React.FC = () => (
-	<div className="animate-pulse space-y-4 p-4 border border-base-300 rounded-lg bg-base-100 shadow-md">
-		<div className="h-4 bg-base-300 rounded w-1/4"></div>
-		<div className="h-4 bg-base-300 rounded w-1/2"></div>
-		<div className="h-4 bg-base-300 rounded w-1/3"></div>
-	</div>
+	<tr className="animate-pulse">
+		<td className="p-2">
+			<div className="h-4 bg-base-300 rounded w-1/4"></div>
+		</td>
+		<td className="p-2">
+			<div className="h-4 bg-base-300 rounded w-1/2"></div>
+		</td>
+		<td className="p-2">
+			<div className="h-4 bg-base-300 rounded w-1/3"></div>
+		</td>
+		<td className="p-2">
+			<div className="h-4 bg-base-300 rounded w-1/4"></div>
+		</td>
+	</tr>
 );
 
 const OrderHistory: React.FC = () => {
 	const { orders, status } = useOrderHistory();
+	const navigate = useNavigate();
+
+	const handleOrderClick = (orderId: string) => {
+		navigate(`/order/${orderId}`);
+	};
 
 	if (status === "loading") {
 		return (
-			<div className="p-6 space-y-4">
-				<SkeletonLoader />
-				<SkeletonLoader />
-				<SkeletonLoader />
+			<div className="p-6">
+				<table className="w-full">
+					<tbody>
+						<SkeletonLoader />
+						<SkeletonLoader />
+						<SkeletonLoader />
+					</tbody>
+				</table>
 			</div>
 		);
 	}
@@ -34,22 +53,32 @@ const OrderHistory: React.FC = () => {
 
 	return (
 		<div className="p-6 bg-base-200 min-h-screen">
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-				{orders.map((order: Order) => (
-					<div
-						key={order._id}
-						className="p-4 border border-base-300 rounded-lg bg-base-100 shadow-md transition transform hover:scale-105"
-					>
-						<h3 className="text-h3 font-heading text-primary">Order ID: {order._id}</h3>
-						<p className="text-body text-neutral">
-							Total: <span className="font-semibold">${order.orderTotal}</span>
-						</p>
-						<p className="text-body text-neutral">
-							Status: <span className={`badge ${getStatusClass(order.status)}`}>{order.status}</span>
-						</p>
-					</div>
-				))}
-			</div>
+			<table className="w-full bg-base-100 shadow-md rounded-lg overflow-hidden">
+				<thead className="bg-base-300">
+					<tr>
+						<th className="p-2 text-left">Order ID</th>
+						<th className="p-2 text-left">Date</th>
+						<th className="p-2 text-left">Total</th>
+						<th className="p-2 text-left">Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					{orders.map((order: Order) => (
+						<tr
+							key={order._id}
+							className="border-b border-base-200 hover:bg-base-200 cursor-pointer transition duration-200"
+							onClick={() => handleOrderClick(order._id)}
+						>
+							<td className="p-2">{order._id}</td>
+							<td className="p-2">{new Date(order.createdAt).toLocaleDateString()}</td>
+							<td className="p-2">${order.orderTotal.toFixed(2)}</td>
+							<td className="p-2">
+								<span className={`badge ${getStatusClass(order.status)}`}>{order.status}</span>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
 		</div>
 	);
 };

@@ -23,7 +23,9 @@ const OrderConfirmation: React.FC = () => {
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<h1 className="text-2xl font-bold mb-4">Order Confirmation</h1>
-			<p className="mb-4">Thank you for your order!</p>
+			<p className="mb-4">
+				Thank you for your order! Your tracking information will be provided shortly in the next 48hrs
+			</p>
 			<div className="bg-white shadow-md rounded-lg p-6 mb-4">
 				<h2 className="text-xl font-semibold mb-2">Order Details</h2>
 				<p>Order ID: {order._id}</p>
