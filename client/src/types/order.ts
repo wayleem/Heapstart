@@ -1,8 +1,10 @@
 import { Address, RequestStatus } from "./common";
 
-export interface TrackingNumber {
+export interface TrackingInfo {
 	productId: string;
-	trackingNumber: string;
+	carrier?: string;
+	trackingNumber?: string;
+	trackingLink?: string;
 }
 
 export interface CreateOrderData {
@@ -32,8 +34,7 @@ export interface Order {
 	paymentInfo: {
 		paymentMethodId: string;
 	};
-	trackingNumber?: string;
-	trackingNumbers: TrackingNumber[];
+	trackingInfo: TrackingInfo[];
 	status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
 	createdAt: string;
 	updatedAt: string;

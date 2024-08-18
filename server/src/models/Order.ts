@@ -1,4 +1,12 @@
 import { Schema, model, Model, Document } from "mongoose";
+import { AddressSchema } from "../types/schemas";
+
+const TrackingInfoSchema = new Schema({
+	productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+	carrier: { type: String, required: true }, // e.g., "UPS", "FedEx"
+	trackingNumber: { type: String, required: true, trim: true },
+	trackingLink: { type: String, trim: true }, // optional if you want to store a pre-generated link
+});
 
 export interface IOrder extends Document {
 	userId: Schema.Types.ObjectId;
@@ -13,10 +21,11 @@ export interface IOrder extends Document {
 		paymentMethodId: string;
 	};
 	status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
-	trackingNumber?: string;
-	trackingNumbers?: Array<{
+	trackingInfo: Array<{
 		productId: Schema.Types.ObjectId;
+		carrier: string;
 		trackingNumber: string;
+		trackingLink?: string;
 	}>;
 	createdAt: Date;
 	updatedAt: Date;
@@ -33,15 +42,7 @@ const OrderSchema = new Schema<IOrder>(
 			},
 		],
 		orderTotal: { type: Number, required: true, min: 0 },
-		shippingAddress: {
-			firstName: { type: String, required: true, trim: true },
-			lastName: { type: String, required: true, trim: true },
-			street: { type: String, required: true, trim: true },
-			city: { type: String, required: true, trim: true },
-			state: { type: String, required: true, trim: true },
-			postalCode: { type: String, required: true, trim: true },
-			country: { type: String, required: true, trim: true },
-		},
+		shippingAddress: AddressSchema,
 		paymentInfo: {
 			paymentMethodId: { type: String, required: true },
 		},
@@ -51,13 +52,7 @@ const OrderSchema = new Schema<IOrder>(
 			required: true,
 			default: "pending",
 		},
-		trackingNumber: { type: String },
-		trackingNumbers: [
-			{
-				productId: { type: Schema.Types.ObjectId, ref: "Product" },
-				trackingNumber: { type: String, trim: true },
-			},
-		],
+		trackingInfo: [TrackingInfoSchema], // Embed the TrackingInfo type
 	},
 	{ timestamps: true },
 );
