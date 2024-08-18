@@ -18,6 +18,9 @@ import OrderConfirmation from "@pages/checkout/OrderConfirmation";
 import { manageCart } from "@store/thunks/cartThunks";
 import { fetchProducts } from "@store/thunks/productThunks";
 import { fetchUserProfile } from "@store/thunks/userThunks";
+import OrderDetails from "@pages/orders/OrderDetails";
+import { fetchUserOrders } from "@store/thunks/orderThunks";
+import { fetchUserSupportTickets } from "@store/thunks/supportTicketThunks";
 
 function App() {
 	const dispatch = useAppDispatch();
@@ -28,6 +31,8 @@ function App() {
 	useEffect(() => {
 		if (isAuthenticated && user.accessToken) {
 			dispatch(fetchUserProfile());
+			dispatch(fetchUserOrders());
+			dispatch(fetchUserSupportTickets());
 			dispatch(manageCart({ action: "fetch" }));
 			if (productsStatus === "idle") {
 				dispatch(fetchProducts());
@@ -50,6 +55,7 @@ function App() {
 					<Route path="/checkout" element={<Checkout />} />
 					<Route path="/order-history" element={<OrderHistory />} />
 					<Route path="/order-confirmation" element={<OrderConfirmation />} />
+					<Route path="/order/:orderId" element={<OrderDetails />} />
 				</Route>
 			</Routes>
 		</Router>
