@@ -34,10 +34,8 @@ export const login = createAsyncThunk<
 		const response = await authApi.login(credentials);
 		const { userId, email, token } = response;
 
-		// Immediately dispatch setUser with the token
 		dispatch(setUser({ id: userId, email, accessToken: token }));
 
-		// Fetch user profile
 		try {
 			const profileResponse = await userApi.getProfile();
 			dispatch(setUser({ profile: profileResponse }));

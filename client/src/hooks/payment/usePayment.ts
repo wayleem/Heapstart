@@ -21,7 +21,7 @@ export const usePayment = () => {
 					return;
 				}
 
-				const response = await paymentApi.createPaymentIntent(cartItemsArray);
+				const response = await paymentApi.createPaymentIntent({ items: cartItemsArray });
 				setClientSecret(response.clientSecret);
 			} catch (error) {
 				setError("Failed to initialize payment. Please try again.");

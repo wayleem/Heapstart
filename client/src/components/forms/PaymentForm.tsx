@@ -8,7 +8,7 @@ import { setCurrentOrder } from "@store/slices/orderSlice";
 import { AxiosError } from "axios";
 import { selectAllProducts } from "@store/slices/productSlice";
 import { createOrder } from "@store/thunks/orderThunks";
-import { Address, CreateOrderData, Product } from "@types";
+import { Address, CreateOrderRequest, Product } from "@types";
 
 interface PaymentFormProps {
 	total: number;
@@ -39,7 +39,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ total, shippingInfo }) => {
 					return;
 				}
 
-				const response = await paymentApi.createPaymentIntent(cartItemsArray);
+				const response = await paymentApi.createPaymentIntent({ items: cartItemsArray });
 				setClientSecret(response.clientSecret);
 			} catch (error) {
 				setError("Failed to initialize payment. Please try again.");
@@ -84,12 +84,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ total, shippingInfo }) => {
 
 	const createUserOrder = async (paymentIntentId: string) => {
 		try {
-			const orderData: CreateOrderData = {
+			const orderData: CreateOrderRequest = {
 				products: Object.entries(cartItems).map(([productId, quantity]) => {
 					const product = products.find((p: Product) => p._id === productId);
 					return {
 						productId,
-						quantity: Number(quantity), // Ensure quantity is a number
+						quantity: Number(quantity),
 						price: product?.price || 0,
 					};
 				}),

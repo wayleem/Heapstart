@@ -20,7 +20,6 @@ export interface Product extends ProductData {
 
 export interface ProductState {
 	items: Product[];
-	purchasedItems: Product[];
 	status: RequestStatus;
 	error: string | null;
 	selectedProduct: Product | null;

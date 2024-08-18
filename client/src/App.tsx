@@ -15,7 +15,7 @@ import OrderHistory from "@pages/orders/OrderHistory";
 import { selectIsAuthenticated, selectUser } from "./store/slices/userSlice";
 import { selectProductsStatus } from "./store/slices/productSlice";
 import OrderConfirmation from "@pages/checkout/OrderConfirmation";
-import { fetchCart } from "@store/thunks/cartThunks";
+import { manageCart } from "@store/thunks/cartThunks";
 import { fetchProducts } from "@store/thunks/productThunks";
 import { fetchUserProfile } from "@store/thunks/userThunks";
 
@@ -28,7 +28,7 @@ function App() {
 	useEffect(() => {
 		if (isAuthenticated && user.accessToken) {
 			dispatch(fetchUserProfile());
-			dispatch(fetchCart());
+			dispatch(manageCart({ action: "fetch" }));
 			if (productsStatus === "idle") {
 				dispatch(fetchProducts());
 			}

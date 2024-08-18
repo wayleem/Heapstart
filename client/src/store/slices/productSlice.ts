@@ -5,7 +5,6 @@ import { fetchProducts } from "@store/thunks/productThunks";
 // Initial state
 const initialState: ProductState = {
 	items: [],
-	purchasedItems: [],
 	status: "idle",
 	error: null,
 	selectedProduct: null,
@@ -57,7 +56,6 @@ export const { setSelectedProduct, clearSelectedProduct, updateProduct, addProdu
 
 // Selectors
 export const selectAllProducts = (state: RootState) => state.product.items;
-export const selectPurchasedItems = (state: RootState) => state.product.purchasedItems;
 export const selectProductsStatus = (state: RootState) => state.product.status;
 export const selectProductsError = (state: RootState) => state.product.error;
 export const selectSelectedProduct = (state: RootState) => state.product.selectedProduct;

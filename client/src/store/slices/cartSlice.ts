@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { fetchCart, updateCart, addToCart, removeFromCart } from "../thunks/cartThunks";
-import { CartState, RequestStatus, RootState } from "@types";
+import { manageCart } from "../thunks/cartThunks";
+import { CartState, RequestStatus, RootState, CartItems } from "@types";
 
 const initialState: CartState = {
 	items: {},
@@ -19,33 +19,28 @@ const cartSlice = createSlice({
 		setCartError: (state, action: PayloadAction<string | null>) => {
 			state.error = action.payload;
 		},
+		updateCartItems: (state, action: PayloadAction<CartItems>) => {
+			state.items = action.payload;
+		},
 	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(fetchCart.pending, (state) => {
+			.addCase(manageCart.pending, (state) => {
 				state.status = "loading";
 			})
-			.addCase(fetchCart.fulfilled, (state, action) => {
+			.addCase(manageCart.fulfilled, (state, action) => {
 				state.status = "succeeded";
 				state.items = action.payload;
+				state.error = null;
 			})
-			.addCase(fetchCart.rejected, (state, action) => {
+			.addCase(manageCart.rejected, (state, action) => {
 				state.status = "failed";
 				state.error = action.payload ?? "An unknown error occurred";
-			})
-			.addCase(updateCart.fulfilled, (state, action) => {
-				state.items = action.payload;
-			})
-			.addCase(addToCart.fulfilled, (state, action) => {
-				state.items = action.payload;
-			})
-			.addCase(removeFromCart.fulfilled, (state, action) => {
-				state.items = action.payload;
 			});
 	},
 });
 
-export const { clearCart, setCartStatus, setCartError } = cartSlice.actions;
+export const { clearCart, setCartStatus, setCartError, updateCartItems } = cartSlice.actions;
 export const selectCartItems = (state: RootState) => state.cart.items;
 export const selectCartStatus = (state: RootState) => state.cart.status;
 export const selectCartError = (state: RootState) => state.cart.error;

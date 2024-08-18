@@ -1,9 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { orderApi } from "../../api/endpoints";
 import { handleApiError, log } from "../../utils/errorUtils";
-import { CreateOrderData, Order } from "@types";
+import { CreateOrderRequest, Order } from "@types";
 
-export const createOrder = createAsyncThunk<Order, CreateOrderData, { rejectValue: string }>(
+export const createOrder = createAsyncThunk<Order, CreateOrderRequest, { rejectValue: string }>(
 	"orders/createOrder",
 	async (orderData, { rejectWithValue }) => {
 		try {

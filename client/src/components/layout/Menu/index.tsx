@@ -8,9 +8,7 @@ import CartSection from "../Menu/cart/CartSection";
 import NavigationSection from "../Menu/nav/NavigationSection";
 import AuthSection from "../Menu/auth/AuthSection";
 import { logout } from "@store/thunks/userThunks";
-import { removeFromCart } from "@store/thunks/cartThunks";
 import { useNavigationMenu } from "@hooks/nav/useNavigationMenu";
-import { Product } from "@types";
 
 interface MenuProps {
 	closeMenu: () => void;
@@ -20,8 +18,7 @@ const Menu: React.FC<MenuProps> = ({ closeMenu }) => {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const isAuthenticated = useAppSelector(selectIsAuthenticated);
-	const { isLoading, isMobile, isCartExpanded, setIsCartExpanded, currentPage, setCurrentPage, cartProducts } =
-		useNavigationMenu();
+	const { isLoading, isMobile, isCartExpanded, setIsCartExpanded, currentPage, setCurrentPage } = useNavigationMenu();
 
 	const toggleCart = () => {
 		setIsCartExpanded(!isCartExpanded);
@@ -44,14 +41,6 @@ const Menu: React.FC<MenuProps> = ({ closeMenu }) => {
 		}
 	};
 
-	const handleRemoveItem = (productId: string) => {
-		dispatch(removeFromCart(productId));
-	};
-
-	const validCartProducts = cartProducts.filter(
-		(item): item is { product: Product; quantity: number; productId: string } => item.product !== undefined,
-	);
-
 	return (
 		<div className="h-full w-full bg-base-100 p-6 flex flex-col space-y-6 shadow-lg font-sans">
 			<div className="flex items-center justify-between">
@@ -64,11 +53,9 @@ const Menu: React.FC<MenuProps> = ({ closeMenu }) => {
 				<CartSection
 					isCartExpanded={isCartExpanded}
 					toggleCart={toggleCart}
-					cartProducts={validCartProducts}
 					isLoading={isLoading}
 					currentPage={currentPage}
 					setCurrentPage={setCurrentPage}
-					handleRemoveItem={handleRemoveItem}
 					handleLinkClick={handleLinkClick}
 				/>
 				<NavigationSection handleLinkClick={handleLinkClick} />

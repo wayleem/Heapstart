@@ -17,7 +17,7 @@ const PasswordReset: React.FC = () => {
 		setError(null);
 
 		try {
-			await authApi.forgotPassword(email);
+			await authApi.forgotPassword({ email });
 			setMessage("If an account with this email exists, a password reset link will be sent shortly.");
 		} catch (err) {
 			const errorMessage = handleApiError(err);

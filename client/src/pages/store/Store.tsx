@@ -61,7 +61,7 @@ const Store: React.FC = () => {
 							<p className="text-gray-600 mb-2">{product.category}</p>
 							<p className="text-lg font-bold mb-4">${product.price.toFixed(2)}</p>
 							<button
-								onClick={() => handleAddToCart(product._id, 1)}
+								onClick={() => handleAddToCart(product._id)}
 								className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
 							>
 								Add to Cart

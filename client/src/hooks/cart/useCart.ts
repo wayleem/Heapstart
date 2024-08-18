@@ -1,6 +1,6 @@
 import { useAppSelector, useAppDispatch } from "@store/index";
 import { selectCartItems } from "@store/slices/cartSlice";
-import { addToCart, removeFromCart } from "@store/thunks/cartThunks";
+import { manageCart } from "@store/thunks/cartThunks";
 import { selectAllProducts } from "@store/slices/productSlice";
 import { Product } from "@types";
 
@@ -16,9 +16,9 @@ export const useCart = () => {
 		})
 		.filter((item): item is { product: Product; quantity: number } => item.product !== undefined);
 
-	const handleAddToCart = async (productId: string, quantity: number) => {
+	const handleAddToCart = async (productId: string) => {
 		try {
-			await dispatch(addToCart({ productId, quantity })).unwrap();
+			await dispatch(manageCart({ action: "add", productId, quantity: 1 })).unwrap();
 		} catch (error) {
 			console.error("Error adding to cart:", error);
 		}
@@ -26,7 +26,7 @@ export const useCart = () => {
 
 	const handleRemoveFromCart = async (productId: string) => {
 		try {
-			await dispatch(removeFromCart(productId)).unwrap();
+			await dispatch(manageCart({ action: "remove", productId })).unwrap();
 		} catch (error) {
 			console.error("Error removing from cart:", error);
 		}

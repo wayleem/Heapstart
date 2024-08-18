@@ -26,5 +26,3 @@ export interface UserState {
 	error: string | null;
 	accessToken: string | null;
 }
-
-export type UserPayload = Partial<Omit<UserState, "isAuthenticated" | "status">>;

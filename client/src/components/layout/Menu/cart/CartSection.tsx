@@ -4,39 +4,31 @@ import CartItem from "./CartItem";
 import Pagination from "../../../common/Pagination";
 import { CartIcon } from "../../../icons";
 import NavItem from "../nav/NavItem";
-import { useAppSelector } from "@store/index";
-import { selectCartItems } from "@store/slices/cartSlice";
-import { Product } from "@types";
+import { useCart } from "@hooks/cart/useCart";
 
 interface CartSectionProps {
 	isCartExpanded: boolean;
 	toggleCart: () => void;
-	cartProducts: Array<{ product: Product; quantity: number; productId: string }>;
 	isLoading: boolean;
 	currentPage: number;
 	setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-	handleRemoveItem: (productId: string) => void;
 	handleLinkClick: (isCartLink: boolean) => void;
 }
 
 const CartSection: React.FC<CartSectionProps> = ({
 	isCartExpanded,
 	toggleCart,
-	cartProducts,
 	isLoading,
 	currentPage,
 	setCurrentPage,
-	handleRemoveItem,
 	handleLinkClick,
 }) => {
-	const cartItems = useAppSelector(selectCartItems);
+	const { cartProducts, handleRemoveFromCart, calculateTotal } = useCart();
+
 	const itemsPerPage = 10;
 	const totalPages = Math.ceil(cartProducts.length / itemsPerPage);
 	const displayedItems = cartProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-	const cartTotal = cartProducts.reduce((total, item) => {
-		return total + (item.product?.price || 0) * item.quantity;
-	}, 0);
+	const cartTotal = calculateTotal();
 
 	return (
 		<>
@@ -48,7 +40,9 @@ const CartSection: React.FC<CartSectionProps> = ({
 					<CartIcon className="w-6 h-6" />
 					<span>Your Cart</span>
 				</span>
-				<span className="badge badge-secondary badge-sm">{Object.keys(cartItems).length}</span>
+				<span className="badge badge-secondary badge-sm">
+					{cartProducts.reduce((total, item) => total + item.quantity, 0)}
+				</span>
 			</button>
 			<AnimatePresence>
 				{isCartExpanded && (
@@ -63,16 +57,16 @@ const CartSection: React.FC<CartSectionProps> = ({
 							{isLoading ? (
 								<p>Loading cart...</p>
 							) : displayedItems.length > 0 ? (
-								displayedItems.map(({ product, quantity, productId }) =>
+								displayedItems.map(({ product, quantity }) =>
 									product ? (
 										<CartItem
-											key={productId}
+											key={product._id}
 											product={product}
 											quantity={quantity}
-											onRemove={handleRemoveItem}
+											onRemove={() => handleRemoveFromCart(product._id)}
 										/>
 									) : (
-										<p key={productId}>Loading product...</p>
+										<p>Loading product...</p>
 									),
 								)
 							) : (
