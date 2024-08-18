@@ -2,13 +2,12 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { userApi } from "../../api/endpoints";
 import { handleApiError, log } from "../../utils/errorUtils";
 import { CartItems, RootState } from "@types";
-import { updateCartItems } from "@store/slices/cartSlice";
 
 export const manageCart = createAsyncThunk<
 	CartItems,
 	{ action: "fetch" | "update" | "add" | "remove"; productId?: string; quantity?: number },
 	{ state: RootState; rejectValue: string }
->("cart/manageCart", async ({ action, productId, quantity }, { getState, dispatch, rejectWithValue }) => {
+>("cart/manageCart", async ({ action, productId, quantity }, { getState, rejectWithValue }) => {
 	try {
 		let updatedCart: CartItems;
 		const currentState = getState();
@@ -37,10 +36,6 @@ export const manageCart = createAsyncThunk<
 				throw new Error("Invalid cart action");
 		}
 
-		// For update, add, and remove actions
-		console.log(currentState.cart);
-		console.log(updatedCart);
-		dispatch(updateCartItems(updatedCart));
 		return await userApi.updateCart(updatedCart);
 	} catch (err) {
 		const errorMessage = handleApiError(err);
