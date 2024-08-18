@@ -35,6 +35,17 @@ declare global {
 		productId: Types.ObjectId;
 		trackingNumber: string;
 	}
+
+	export interface CreateSupportTicketDTO {
+		orderId: string;
+		subject: string;
+		description: string;
+	}
+
+	export interface UpdateSupportTicketDTO {
+		status?: "open" | "in-progress" | "resolved" | "closed";
+		description?: string;
+	}
 }
 
 export {};

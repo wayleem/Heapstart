@@ -51,7 +51,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 export const updateCart = async (req: Request, res: Response) => {
 	try {
 		const userId = req.userId; // Assuming you set this in your authenticateJWT middleware
-		const { cart } = req.body;
+		const cart = req.body;
 
 		const updatedUser = await User.findByIdAndUpdate(userId, { cart }, { new: true, select: "cart" });
 

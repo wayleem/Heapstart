@@ -5,6 +5,7 @@ import { adminRouter } from "./adminRoutes";
 import { productRouter } from "./productRoutes";
 import { orderRouter } from "./orderRoutes";
 import { paymentRouter } from "./paymentRoutes";
+import { supportTicketRouter } from "./supportTicketRoutes";
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use("/admin", adminRouter);
 router.use("/products", productRouter);
 router.use("/orders", orderRouter);
 router.use("/payment", paymentRouter);
+router.use("/support-tickets", supportTicketRouter);
 
 export default router;

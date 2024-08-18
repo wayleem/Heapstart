@@ -9,6 +9,7 @@ export interface IUser extends Document {
 	isActive: boolean;
 	profile: Profile;
 	orderHistory: Types.ObjectId[];
+	supportTickets: Types.ObjectId[];
 	lastLogin?: Date;
 	tokens: Tokens;
 	cart: {
@@ -38,6 +39,7 @@ const UserSchema = new Schema<IUser>(
 			},
 		},
 		orderHistory: [{ type: Schema.Types.ObjectId, ref: "Order" }],
+		supportTickets: [{ type: Schema.Types.ObjectId, ref: "SupportTicket" }],
 		lastLogin: { type: Date },
 		tokens: {
 			resetPasswordToken: { type: String },
