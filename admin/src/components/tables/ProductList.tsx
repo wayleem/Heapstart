@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { PencilIcon, TrashIcon, PlusIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useAppDispatch } from "@store/index";
 import { RootState } from "@types";
-import { fetchProducts, removeProduct } from "@store/thunks/productThunks";
+import { fetchProducts, deleteProduct } from "@store/thunks/productThunks";
 
 const ProductList: React.FC = () => {
 	const dispatch = useAppDispatch();
@@ -20,7 +20,7 @@ const ProductList: React.FC = () => {
 
 	const handleDelete = (id: string) => {
 		if (window.confirm("Are you sure you want to delete this product?")) {
-			dispatch(removeProduct(id));
+			dispatch(deleteProduct(id));
 		}
 	};
 

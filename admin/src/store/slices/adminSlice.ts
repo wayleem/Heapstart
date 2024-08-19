@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { login, logout } from "../thunks/adminThunks";
-import { AdminState } from "@types";
+import { AdminState, LoginResponse } from "@types";
 
 const initialState: AdminState = {
 	isAuthenticated: false,
 	username: null,
+	token: null,
 	error: null,
 };
 
@@ -14,9 +15,10 @@ const adminSlice = createSlice({
 	reducers: {},
 	extraReducers: (builder) => {
 		builder
-			.addCase(login.fulfilled, (state, action: PayloadAction<{ username: string }>) => {
+			.addCase(login.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
 				state.isAuthenticated = true;
-				state.username = action.payload.username;
+				state.username = action.payload.admin.username;
+				state.token = action.payload.token;
 				state.error = null;
 			})
 			.addCase(login.rejected, (state, action) => {
@@ -25,6 +27,7 @@ const adminSlice = createSlice({
 			.addCase(logout.fulfilled, (state) => {
 				state.isAuthenticated = false;
 				state.username = null;
+				state.token = null;
 			});
 	},
 });

@@ -100,4 +100,12 @@ export const getUserOrders = async (req: Request, res: Response) => {
 	}
 };
 
-// Add more order-related controller functions as needed
+export const getAllOrders = async (req: Request, res: Response) => {
+	try {
+		const orders = await Order.find().sort({ createdAt: -1 });
+		res.json(orders);
+	} catch (error) {
+		console.error("Error fetching all orders:", error);
+		res.status(500).json({ message: "Error fetching orders", error: error.message });
+	}
+};

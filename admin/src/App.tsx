@@ -6,6 +6,7 @@ import { RootState } from "@types";
 import ProductForm from "@components/forms/ProductForm";
 import Login from "@pages/auth/Login";
 import ProductList from "@components/tables/ProductList";
+import OrderManagement from "@pages/orders/OrderManagement";
 
 const App: React.FC = () => {
 	const isAuthenticated = useSelector((state: RootState) => state.admin.isAuthenticated);
@@ -56,6 +57,18 @@ const App: React.FC = () => {
 						isAuthenticated ? (
 							<Layout>
 								<ProductForm />
+							</Layout>
+						) : (
+							<Navigate to="/login" />
+						)
+					}
+				/>
+				<Route
+					path="/orders"
+					element={
+						isAuthenticated ? (
+							<Layout>
+								<OrderManagement />
 							</Layout>
 						) : (
 							<Navigate to="/login" />

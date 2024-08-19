@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Product from "../models/Product";
+import Product, { IProduct } from "../models/Product";
 import { ProductErrors } from "../utils/errors";
 import multer from "multer";
 
@@ -49,31 +49,39 @@ export const createProduct = [
 	},
 ];
 
-export const updateProduct = [
-	upload.array("images", 5),
-	async (req: Request, res: Response) => {
-		try {
-			const productData = req.body;
+export const updateProduct = async (req: Request, res: Response) => {
+	try {
+		const productData: Partial<IProduct> = req.body;
 
-			if (req.files && Array.isArray(req.files)) {
-				productData.images = (req.files as Express.Multer.File[]).map((file) => file.buffer.toString("base64"));
-			}
-
-			const product = await Product.findByIdAndUpdate(req.params.id, productData, {
-				new: true,
-				runValidators: true,
-			});
-
-			if (!product) {
-				return res.status(404).json({ type: ProductErrors.PRODUCT_NOT_FOUND, message: "Product not found" });
-			}
-
-			res.json(product);
-		} catch (error) {
-			res.status(400).json({ type: ProductErrors.PRODUCT_UPDATE_ERROR, message: error.message });
+		// Handle existing images
+		if (req.body.existingImages) {
+			productData.images = Array.isArray(req.body.existingImages)
+				? req.body.existingImages
+				: [req.body.existingImages];
+		} else {
+			productData.images = [];
 		}
-	},
-];
+
+		// Handle new images
+		if (req.files && Array.isArray(req.files)) {
+			const newImages = (req.files as Express.Multer.File[]).map((file) => file.buffer.toString("base64"));
+			productData.images = [...productData.images, ...newImages];
+		}
+
+		const product = await Product.findByIdAndUpdate(req.params.id, productData, {
+			new: true,
+			runValidators: true,
+		});
+
+		if (!product) {
+			return res.status(404).json({ type: ProductErrors.PRODUCT_NOT_FOUND, message: "Product not found" });
+		}
+
+		res.json(product);
+	} catch (error) {
+		res.status(400).json({ type: ProductErrors.PRODUCT_UPDATE_ERROR, message: error.message });
+	}
+};
 
 export const deactivateProduct = async (req: Request, res: Response) => {
 	try {

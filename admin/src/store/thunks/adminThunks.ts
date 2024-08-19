@@ -1,11 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { loginAdmin, logoutAdmin } from "../../utils/api";
+import { authApi } from "@api/endpoints";
+import { LoginRequest } from "@types";
 
-export const login = createAsyncThunk("admin/login", async (credentials: { username: string; password: string }) => {
-	const response = await loginAdmin(credentials);
-	return response.data;
+export const login = createAsyncThunk("admin/login", async (credentials: LoginRequest) => {
+	const response = await authApi.login(credentials);
+	return response;
 });
 
 export const logout = createAsyncThunk("admin/logout", async () => {
-	await logoutAdmin();
+	await authApi.logout();
 });

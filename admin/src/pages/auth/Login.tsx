@@ -10,7 +10,7 @@ const Login: React.FC = () => {
 	const [password, setPassword] = useState("");
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
-	const { isAuthenticated, error } = useSelector((state: RootState) => state.admin);
+	const { isAuthenticated } = useSelector((state: RootState) => state.admin);
 
 	React.useEffect(() => {
 		if (isAuthenticated) {

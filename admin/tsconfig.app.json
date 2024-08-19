@@ -29,7 +29,8 @@
 			"@hooks/*": ["./src/hooks/*"],
 			"@assets/*": ["./src/assets/*"],
 			"@utils/*": ["./src/utils/*"],
-			"@types": ["./src/types"]
+			"@types": ["./src/types"],
+			"@api/*": ["./src/api/*"]
 		}
 	},
 	"include": ["src"]
