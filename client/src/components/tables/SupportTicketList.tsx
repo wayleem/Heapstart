@@ -19,15 +19,34 @@ const SupportTicketList: React.FC = () => {
 	}
 
 	return (
-		<div className="space-y-4">
-			<h2 className="text-2xl font-bold">Your Support Tickets</h2>
-			{tickets.map((ticket) => (
-				<div key={ticket._id} className="border p-4 rounded-md">
-					<h3 className="font-semibold">{ticket.subject}</h3>
-					<p className="text-gray-600">{ticket.description}</p>
-					<p className="text-sm text-gray-500">Status: {ticket.status}</p>
+		<div>
+			<h2 className="text-xl font-semibold mb-3">Support Tickets</h2>
+			{tickets.length === 0 ? (
+				<p>You have no open support tickets.</p>
+			) : (
+				<div className="bg-base-100 shadow-md rounded overflow-x-auto">
+					<table className="w-full">
+						<thead className="bg-base-200">
+							<tr>
+								<th className="p-2 text-left">Ticket ID</th>
+								<th className="p-2 text-left">Subject</th>
+								<th className="p-2 text-left">Status</th>
+								<th className="p-2 text-left">Created At</th>
+							</tr>
+						</thead>
+						<tbody>
+							{tickets.map((ticket) => (
+								<tr key={ticket._id} className="border-b border-base-200">
+									<td className="p-2">{ticket._id}</td>
+									<td className="p-2">{ticket.subject}</td>
+									<td className="p-2">{ticket.status}</td>
+									<td className="p-2">{new Date(ticket.createdAt).toLocaleDateString()}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
 				</div>
-			))}
+			)}
 		</div>
 	);
 };

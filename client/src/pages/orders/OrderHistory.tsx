@@ -52,7 +52,7 @@ const OrderHistory: React.FC = () => {
 	}
 
 	return (
-		<div className="p-6 bg-base-200 min-h-screen">
+		<div>
 			<table className="w-full bg-base-100 shadow-md rounded-lg overflow-hidden">
 				<thead className="bg-base-300">
 					<tr>
