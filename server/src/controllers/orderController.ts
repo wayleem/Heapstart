@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Order from "../models/Order";
 import { startSession } from "mongoose";
 import User from "../models/User";
+import Product from "../models/Product";
 
 export const createOrder = async (req: Request, res: Response) => {
 	const session = await startSession();
@@ -11,11 +12,24 @@ export const createOrder = async (req: Request, res: Response) => {
 		const { products, shippingAddress, paymentInfo, orderTotal } = req.body;
 		const userId = req.userId;
 
-		console.log("Received order data:", { products, shippingAddress, paymentInfo, orderTotal, userId });
+		// Fetch product details for each product in the order
+		const productDetails = await Promise.all(
+			products.map(async (product: { productId: string; quantity: number; price: number }) => {
+				const productDoc = await Product.findById(product.productId);
+				if (!productDoc) {
+					throw new Error(`Product not found: ${product.productId}`);
+				}
+				return {
+					...product,
+					name: productDoc.name,
+					images: productDoc.images,
+				};
+			}),
+		);
 
 		const newOrder = new Order({
 			userId,
-			products,
+			products: productDetails,
 			shippingAddress,
 			paymentInfo,
 			orderTotal,
@@ -23,7 +37,6 @@ export const createOrder = async (req: Request, res: Response) => {
 		});
 
 		const savedOrder = await newOrder.save({ session });
-		console.log("Saved order:", savedOrder);
 
 		// Update user's orderHistory
 		const updatedUser = await User.findByIdAndUpdate(

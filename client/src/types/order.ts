@@ -25,17 +25,18 @@ export interface Order {
 	userId: string;
 	products: Array<{
 		productId: string;
+		name: string;
+		images: string[];
 		quantity: number;
 		price: number;
 	}>;
 	orderTotal: number;
-	orderDate: string;
 	shippingAddress: Address;
 	paymentInfo: {
 		paymentMethodId: string;
 	};
-	trackingInfo: TrackingInfo[];
 	status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+	trackingInfo: TrackingInfo[];
 	createdAt: string;
 	updatedAt: string;
 }

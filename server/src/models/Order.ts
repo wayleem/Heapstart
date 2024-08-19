@@ -1,17 +1,14 @@
+// src/models/Order.ts
+
 import { Schema, model, Model, Document } from "mongoose";
 import { AddressSchema } from "../types/schemas";
-
-const TrackingInfoSchema = new Schema({
-	productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
-	carrier: { type: String, required: true }, // e.g., "UPS", "FedEx"
-	trackingNumber: { type: String, required: true, trim: true },
-	trackingLink: { type: String, trim: true }, // optional if you want to store a pre-generated link
-});
 
 export interface IOrder extends Document {
 	userId: Schema.Types.ObjectId;
 	products: Array<{
 		productId: Schema.Types.ObjectId;
+		name: string;
+		images: string[];
 		quantity: number;
 		price: number;
 	}>;
@@ -37,6 +34,8 @@ const OrderSchema = new Schema<IOrder>(
 		products: [
 			{
 				productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+				name: { type: String, required: true },
+				images: [{ type: String }],
 				quantity: { type: Number, required: true, min: 1 },
 				price: { type: Number, required: true, min: 0 },
 			},
@@ -52,12 +51,17 @@ const OrderSchema = new Schema<IOrder>(
 			required: true,
 			default: "pending",
 		},
-		trackingInfo: [TrackingInfoSchema], // Embed the TrackingInfo type
+		trackingInfo: [
+			{
+				productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+				carrier: { type: String, required: true },
+				trackingNumber: { type: String, required: true },
+				trackingLink: { type: String },
+			},
+		],
 	},
 	{ timestamps: true },
 );
-
-OrderSchema.index({ userId: 1, createdAt: -1 });
 
 const Order: Model<IOrder> = model<IOrder>("Order", OrderSchema);
 
