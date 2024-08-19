@@ -1,6 +1,7 @@
 import { RequestStatus } from "./common";
 
-export interface ProductData {
+export interface Product {
+	_id: string;
 	name: string;
 	description: string;
 	price: number;
@@ -8,13 +9,7 @@ export interface ProductData {
 	supplier_cost: number;
 	supplier_link: string;
 	category: string;
-}
-
-export interface Product extends ProductData {
-	_id: string;
 	images: string[];
-	createdAt?: Date;
-	updatedAt?: Date;
 	isActive: boolean;
 }
 

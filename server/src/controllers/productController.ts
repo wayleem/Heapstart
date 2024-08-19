@@ -30,13 +30,16 @@ export const createProduct = [
 	upload.array("images", 5),
 	async (req: Request, res: Response) => {
 		try {
-			const { _id, ...productData } = req.body;
+			const productData: Partial<IProduct> = req.body;
 
 			if (productData.price) productData.price = Number(productData.price);
 			if (productData.supplier_cost) productData.supplier_cost = Number(productData.supplier_cost);
 
+			// Handle images
+			productData.images = [];
 			if (req.files && Array.isArray(req.files)) {
-				productData.images = (req.files as Express.Multer.File[]).map((file) => file.buffer.toString("base64"));
+				const newImages = (req.files as Express.Multer.File[]).map((file) => file.buffer.toString("base64"));
+				productData.images = [...productData.images, ...newImages];
 			}
 
 			const product = new Product(productData);

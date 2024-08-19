@@ -51,34 +51,31 @@ export const useProductForm = (id?: string) => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		setStatus("loading");
+
+		const formDataToSend = new FormData();
+
+		// Append all non-file fields
+		Object.entries(formData).forEach(([key, value]) => {
+			if (key !== "images") {
+				formDataToSend.append(key, value as string | Blob); // Append string or Blob types
+			}
+		});
+
+		// Append file objects (ensure they are files)
+		(formData.images || []).forEach((value) => {
+			if (value instanceof File) {
+				formDataToSend.append("images", value);
+			}
+		});
+
 		try {
-			const productData = new FormData();
-			Object.entries(formData).forEach(([key, value]) => {
-				if (key !== "images" && key !== "_id") {
-					productData.append(key, value.toString());
-				}
-			});
-
-			if (formData.images && formData.images.length > 0) {
-				formData.images.forEach((image, index) => {
-					if (image instanceof File) {
-						productData.append(`images`, image);
-					} else if (typeof image === "string") {
-						productData.append(`existingImages[${index}]`, image);
-					}
-				});
-			}
-
 			if (id) {
-				await dispatch(updateProductDetails({ id, productData })).unwrap();
+				await dispatch(updateProductDetails({ id, productData: formDataToSend }));
 			} else {
-				await dispatch(createProduct(productData)).unwrap();
+				await dispatch(createProduct(formDataToSend));
 			}
-			navigate("/products");
-		} catch (err: unknown) {
-			setError(err instanceof Error ? err.message : "An error occurred");
-			setStatus("failed");
+		} catch (err) {
+			console.error("Failed to submit the form", err);
 		}
 	};
 

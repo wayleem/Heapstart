@@ -49,7 +49,11 @@ const Store: React.FC = () => {
 					<div key={product._id} className="border rounded-lg overflow-hidden shadow-lg">
 						{product.images && product.images.length > 0 ? (
 							<img
-								src={`data:image/jpeg;base64,${product.images[0]}`}
+								src={
+									product.images[0].startsWith("data:image")
+										? product.images[0]
+										: `data:image/jpeg;base64,${product.images[0]}`
+								}
 								alt={product.name}
 								className="w-full h-48 object-cover"
 							/>

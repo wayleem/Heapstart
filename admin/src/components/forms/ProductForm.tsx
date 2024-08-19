@@ -27,7 +27,7 @@ const ProductForm: React.FC = () => {
 			const filesArray = Array.from(e.target.files);
 			setFormData({ ...formData, images: [...(formData.images || []), ...filesArray] });
 
-			const newPreviews = filesArray.map((file) => URL.createObjectURL(file));
+			const newPreviews = filesArray.map((file: File) => URL.createObjectURL(file));
 			setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
 		}
 	};
