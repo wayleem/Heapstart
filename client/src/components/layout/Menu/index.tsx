@@ -18,7 +18,7 @@ const Menu: React.FC<MenuProps> = ({ closeMenu }) => {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const isAuthenticated = useAppSelector(selectIsAuthenticated);
-	const { isLoading, isMobile, isCartExpanded, setIsCartExpanded, currentPage, setCurrentPage } = useNavigationMenu();
+	const { isMobile, isCartExpanded, setIsCartExpanded, currentPage, setCurrentPage } = useNavigationMenu();
 
 	const toggleCart = () => {
 		setIsCartExpanded(!isCartExpanded);
