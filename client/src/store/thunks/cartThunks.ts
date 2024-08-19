@@ -2,20 +2,22 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { userApi } from "../../api/endpoints";
 import { handleApiError, log } from "../../utils/errorUtils";
 import { CartItems, RootState } from "@types";
+import { setCartItems, setCartStatus, setCartError } from "../slices/cartSlice";
 
 export const manageCart = createAsyncThunk<
-	CartItems,
+	void,
 	{ action: "fetch" | "update" | "add" | "remove"; productId?: string; quantity?: number },
-	{ state: RootState; rejectValue: string }
->("cart/manageCart", async ({ action, productId, quantity }, { getState, rejectWithValue }) => {
+	{ state: RootState }
+>("cart/manageCart", async ({ action, productId, quantity }, { dispatch, getState, rejectWithValue }) => {
 	try {
+		dispatch(setCartStatus("loading"));
 		let updatedCart: CartItems;
 		const currentState = getState();
 
 		switch (action) {
 			case "fetch":
-				return await userApi.getCart();
-			// case "update" - if we want to update entire cart in the future (maybe clear cart on checkout)
+				updatedCart = await userApi.getCart();
+				break;
 			case "update":
 				updatedCart = currentState.cart.items;
 				break;
@@ -36,10 +38,14 @@ export const manageCart = createAsyncThunk<
 				throw new Error("Invalid cart action");
 		}
 
-		return await userApi.updateCart(updatedCart);
+		const result = await userApi.updateCart(updatedCart);
+		dispatch(setCartItems(result));
+		dispatch(setCartStatus("succeeded"));
 	} catch (err) {
 		const errorMessage = handleApiError(err);
 		log("error", `Failed to ${action} cart`, { error: errorMessage, productId, quantity });
+		dispatch(setCartError(errorMessage));
+		dispatch(setCartStatus("failed"));
 		return rejectWithValue(errorMessage);
 	}
 });

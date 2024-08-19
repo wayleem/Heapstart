@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { login, logout, fetchUserProfile } from "../thunks/userThunks";
 import { RootState, UserState } from "@types";
 
 const initialState: UserState = {
@@ -19,34 +18,17 @@ const userSlice = createSlice({
 			return { ...state, ...action.payload };
 		},
 		clearUser: () => initialState,
-		setError: (state, action: PayloadAction<string>) => {
-			state.error = action.payload;
-			state.status = "failed";
+		setUserStatus: (state, action: PayloadAction<UserState["status"]>) => {
+			state.status = action.payload;
 		},
-	},
-	extraReducers: (builder) => {
-		builder
-			.addCase(login.pending, (state) => {
-				state.status = "loading";
-			})
-			.addCase(login.fulfilled, (state, action) => {
-				state.id = action.payload.id;
-				state.email = action.payload.email;
-				state.accessToken = action.payload.accessToken;
-				state.status = "succeeded";
-			})
-			.addCase(login.rejected, (state, action) => {
-				state.status = "failed";
-				state.error = action.payload ?? "Login failed";
-			})
-			.addCase(logout.fulfilled, () => initialState)
-			.addCase(fetchUserProfile.fulfilled, (state, action) => {
-				state.profile = action.payload;
-			});
+		setUserError: (state, action: PayloadAction<string | null>) => {
+			state.error = action.payload;
+		},
 	},
 });
 
-export const { setUser, clearUser, setError } = userSlice.actions;
+export const { setUser, clearUser, setUserStatus, setUserError } = userSlice.actions;
+
 export const selectUser = (state: RootState) => state.user;
 export const selectIsAuthenticated = (state: RootState) => !!state.user.accessToken;
 

@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createOrder, fetchUserOrders } from "../thunks/orderThunks";
 import { Order, OrderState, RootState } from "@types";
 
 const initialState: OrderState = {
@@ -13,42 +12,26 @@ const orderSlice = createSlice({
 	name: "orders",
 	initialState,
 	reducers: {
-		setCurrentOrder: (state, action: PayloadAction<Order>) => {
+		setOrders: (state, action: PayloadAction<Order[]>) => {
+			state.orders = action.payload;
+		},
+		setCurrentOrder: (state, action: PayloadAction<Order | null>) => {
 			state.currentOrder = action.payload;
 		},
-		clearCurrentOrder: (state) => {
-			state.currentOrder = null;
+		addOrder: (state, action: PayloadAction<Order>) => {
+			state.orders.push(action.payload);
 		},
-	},
-	extraReducers: (builder) => {
-		builder
-			.addCase(createOrder.pending, (state) => {
-				state.status = "loading";
-			})
-			.addCase(createOrder.fulfilled, (state, action) => {
-				state.status = "succeeded";
-				state.orders.push(action.payload);
-				state.currentOrder = action.payload;
-			})
-			.addCase(createOrder.rejected, (state, action) => {
-				state.status = "failed";
-				state.error = action.payload ?? "An unknown error occurred";
-			})
-			.addCase(fetchUserOrders.pending, (state) => {
-				state.status = "loading";
-			})
-			.addCase(fetchUserOrders.fulfilled, (state, action) => {
-				state.status = "succeeded";
-				state.orders = action.payload;
-			})
-			.addCase(fetchUserOrders.rejected, (state, action) => {
-				state.status = "failed";
-				state.error = action.payload ?? "An unknown error occurred";
-			});
+		setOrderStatus: (state, action: PayloadAction<OrderState["status"]>) => {
+			state.status = action.payload;
+		},
+		setOrderError: (state, action: PayloadAction<string | null>) => {
+			state.error = action.payload;
+		},
 	},
 });
 
-export const { setCurrentOrder, clearCurrentOrder } = orderSlice.actions;
+export const { setOrders, setCurrentOrder, addOrder, setOrderStatus, setOrderError } = orderSlice.actions;
+
 export const selectCurrentOrder = (state: RootState) => state.orders.currentOrder;
 export const selectOrders = (state: RootState) => state.orders.orders;
 export const selectOrderStatus = (state: RootState) => state.orders.status;
