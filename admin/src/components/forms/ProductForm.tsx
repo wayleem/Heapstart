@@ -164,7 +164,6 @@ const ProductForm: React.FC = () => {
 					name="images"
 					onChange={handleNewImageChange}
 					multiple
-					accept="image/*"
 					className="mt-1 block w-full"
 				/>
 			</div>

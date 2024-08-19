@@ -26,43 +26,37 @@ export const getProduct = async (req: Request, res: Response) => {
 	}
 };
 
-export const createProduct = [
-	upload.array("images", 5),
-	async (req: Request, res: Response) => {
-		try {
-			const productData: Partial<IProduct> = req.body;
+export const createProduct = async (req: Request, res: Response) => {
+	try {
+		const productData = req.body;
 
-			if (productData.price) productData.price = Number(productData.price);
-			if (productData.supplier_cost) productData.supplier_cost = Number(productData.supplier_cost);
+		// Convert string fields to appropriate types if necessary
+		if (productData.price) productData.price = Number(productData.price);
+		if (productData.supplier_cost) productData.supplier_cost = Number(productData.supplier_cost);
 
-			// Handle images
-			productData.images = [];
-			if (req.files && Array.isArray(req.files)) {
-				const newImages = (req.files as Express.Multer.File[]).map((file) => file.buffer.toString("base64"));
-				productData.images = [...productData.images, ...newImages];
-			}
-
-			const product = new Product(productData);
-			await product.save();
-			res.status(201).json(product);
-		} catch (error) {
-			console.error("Product creation error:", error);
-			res.status(400).json({ type: ProductErrors.PRODUCT_CREATION_ERROR, message: error.message });
+		// Handle images
+		if (req.files && Array.isArray(req.files)) {
+			const images = (req.files as Express.Multer.File[]).map((file) => file.buffer.toString("base64"));
+			productData.images = images;
 		}
-	},
-];
+
+		const product = new Product(productData);
+		await product.save();
+		res.status(201).json(product);
+	} catch (error) {
+		res.status(400).json({ type: ProductErrors.PRODUCT_CREATION_ERROR, message: error.message });
+	}
+};
 
 export const updateProduct = async (req: Request, res: Response) => {
 	try {
-		const productData: Partial<IProduct> = req.body;
+		const productData = req.body;
 
-		// Handle existing images
+		// Handle existing images if provided
 		if (req.body.existingImages) {
 			productData.images = Array.isArray(req.body.existingImages)
 				? req.body.existingImages
 				: [req.body.existingImages];
-		} else {
-			productData.images = [];
 		}
 
 		// Handle new images
