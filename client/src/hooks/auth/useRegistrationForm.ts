@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { useAppDispatch } from "@store/index";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@store/index";
 import { useNavigate } from "react-router-dom";
 import { Address, RegistrationErrorState, RegistrationFormData } from "@types";
 import { register } from "@store/thunks/userThunks";
+import { selectIsAuthenticated } from "@store/slices/userSlice";
 
 export const initialRegistrationFormData: RegistrationFormData = {
 	firstName: "",
@@ -39,10 +40,17 @@ export const initialRegistrationErrors: RegistrationErrorState = {
 export const useRegistrationForm = () => {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
+	const isAuthenticated = useAppSelector(selectIsAuthenticated);
 	const [step, setStep] = useState(1);
 	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState<RegistrationFormData>(initialRegistrationFormData);
 	const [errors, setErrors] = useState<RegistrationErrorState>(initialRegistrationErrors);
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			navigate("/");
+		}
+	}, [isAuthenticated, navigate]);
 
 	const validateStep = (
 		currentStep: number,
@@ -114,7 +122,7 @@ export const useRegistrationForm = () => {
 
 		setIsLoading(true);
 		try {
-			const result = await dispatch(
+			await dispatch(
 				register({
 					email: formData.email,
 					password: formData.password,
@@ -130,12 +138,6 @@ export const useRegistrationForm = () => {
 					},
 				}),
 			).unwrap();
-
-			if (result.id) {
-				navigate("/");
-			} else {
-				setErrors((prev) => ({ ...prev, email: "Registration failed. Please try again." }));
-			}
 		} catch (error) {
 			setErrors((prev) => ({ ...prev, email: "Registration failed. Please try again." }));
 		} finally {

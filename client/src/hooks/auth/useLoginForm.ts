@@ -1,16 +1,24 @@
-import { useState } from "react";
-import { useAppDispatch } from "@store/index";
+import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@store/index";
 import { useNavigate } from "react-router-dom";
 import { login } from "@store/thunks/userThunks";
+import { selectIsAuthenticated } from "@store/slices/userSlice";
 
 export const useLoginForm = () => {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
+	const isAuthenticated = useAppSelector(selectIsAuthenticated);
 	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		email: "",
 		password: "",
 	});
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			navigate("/");
+		}
+	}, [isAuthenticated, navigate]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -20,10 +28,13 @@ export const useLoginForm = () => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setIsLoading(true);
-		const result = await dispatch(login(formData)).unwrap();
-		setIsLoading(false);
-		if (result.id) {
-			navigate("/");
+		try {
+			await dispatch(login(formData)).unwrap();
+		} catch (error) {
+			console.error("Login failed:", error);
+			// Handle login error (e.g., show error message)
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
