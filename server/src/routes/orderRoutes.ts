@@ -3,7 +3,14 @@
  */
 
 import express from "express";
-import { createOrder, getOrder, updateOrderStatus, getUserOrders, getAllOrders } from "../controllers/orderController";
+import {
+	createOrder,
+	getOrder,
+	updateOrderStatus,
+	getUserOrders,
+	getAllOrders,
+	updateOrderTracking,
+} from "../controllers/orderController";
 import { authenticateAdmin, authenticateJWT } from "../middleware/auth";
 
 const router = express.Router();
@@ -15,6 +22,7 @@ router.get("/:id", authenticateJWT, getOrder);
 
 // Admin only routes
 
-router.put("/:id/status", updateOrderStatus);
+router.put("/:id/status", authenticateAdmin, updateOrderStatus);
+router.put("/:id/tracking", authenticateAdmin, updateOrderTracking);
 
 export { router as orderRouter };

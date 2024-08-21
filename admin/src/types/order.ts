@@ -32,3 +32,9 @@ export interface OrderState {
 	error: string | null;
 	selectedOrder: Order | null;
 }
+
+export interface TrackingFormData {
+	carrier: string;
+	trackingNumber: string;
+	trackingLink: string;
+}

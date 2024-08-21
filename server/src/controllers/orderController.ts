@@ -86,7 +86,56 @@ export const getOrder = async (req: Request, res: Response) => {
 };
 
 export const updateOrderStatus = async (req: Request, res: Response) => {
-	// Implement order status update logic
+	try {
+		const { id } = req.params;
+		const { status } = req.body;
+
+		const order = await Order.findByIdAndUpdate(id, { status }, { new: true, runValidators: true });
+
+		if (!order) {
+			return res.status(404).json({ message: "Order not found" });
+		}
+
+		res.json(order);
+	} catch (error) {
+		console.error("Error updating order status:", error);
+		res.status(500).json({ message: "Error updating order status", error: error.message });
+	}
+};
+
+export const updateOrderTracking = async (req: Request, res: Response) => {
+	try {
+		const { id } = req.params;
+		const { productId, trackingInfo } = req.body;
+
+		const order = await Order.findById(id);
+
+		if (!order) {
+			return res.status(404).json({ message: "Order not found" });
+		}
+
+		const updatedOrder = await Order.findOneAndUpdate(
+			{ _id: id },
+			{
+				$set: {
+					trackingInfo: [
+						...order.trackingInfo.filter((t) => t.productId.toString() !== productId),
+						{ productId, ...trackingInfo },
+					],
+				},
+			},
+			{ new: true, runValidators: true },
+		);
+
+		if (!updatedOrder) {
+			return res.status(404).json({ message: "Failed to update order" });
+		}
+
+		res.json(updatedOrder);
+	} catch (error) {
+		console.error("Error updating order tracking:", error);
+		res.status(500).json({ message: "Error updating order tracking", error: error.message });
+	}
 };
 
 export const getUserOrders = async (req: Request, res: Response) => {
