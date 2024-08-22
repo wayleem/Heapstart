@@ -14,6 +14,7 @@ import storage from "redux-persist/lib/storage";
 import adminReducer from "./slices/adminSlice";
 import productReducer from "./slices/productSlice";
 import orderReducer from "./slices/orderSlice";
+import supportTicketReducer from "./slices/supportTicketSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { RootState } from "@types";
 
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
 	admin: adminReducer,
 	product: productReducer,
 	order: orderReducer,
+	supportTicket: supportTicketReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

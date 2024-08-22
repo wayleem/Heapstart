@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { login, logout } from "../thunks/adminThunks";
-import { AdminState, LoginResponse } from "@types";
+import { AdminState, RootState } from "@types";
 
 const initialState: AdminState = {
 	isAuthenticated: false,
@@ -12,24 +11,21 @@ const initialState: AdminState = {
 const adminSlice = createSlice({
 	name: "admin",
 	initialState,
-	reducers: {},
-	extraReducers: (builder) => {
-		builder
-			.addCase(login.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
-				state.isAuthenticated = true;
-				state.username = action.payload.admin.username;
-				state.token = action.payload.token;
-				state.error = null;
-			})
-			.addCase(login.rejected, (state, action) => {
-				state.error = action.error.message || "Login failed";
-			})
-			.addCase(logout.fulfilled, (state) => {
-				state.isAuthenticated = false;
-				state.username = null;
-				state.token = null;
-			});
+	reducers: {
+		setAdmin: (state, action: PayloadAction<Partial<AdminState>>) => {
+			return { ...state, ...action.payload };
+		},
+		clearAdmin: () => initialState,
+		setAdminError: (state, action: PayloadAction<string | null>) => {
+			state.error = action.payload;
+		},
 	},
 });
+
+export const { setAdmin, clearAdmin, setAdminError } = adminSlice.actions;
+
+export const selectAdmin = (state: RootState) => state.admin;
+export const selectIsAuthenticated = (state: RootState) => state.admin.isAuthenticated;
+export const selectAdminError = (state: RootState) => state.admin.error;
 
 export default adminSlice.reducer;

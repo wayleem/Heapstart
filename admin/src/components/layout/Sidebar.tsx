@@ -1,7 +1,6 @@
-// Sidebar.tsx
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { HomeIcon, CubeIcon, ShoppingCartIcon, UsersIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, CubeIcon, ShoppingCartIcon, UsersIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 
 const Sidebar = () => {
 	const location = useLocation();
@@ -46,6 +45,9 @@ const Sidebar = () => {
 				</NavItem>
 				<NavItem to="/users" icon={UsersIcon}>
 					Users
+				</NavItem>
+				<NavItem to="/support-tickets" icon={QuestionMarkCircleIcon}>
+					Support Tickets
 				</NavItem>
 			</nav>
 		</div>

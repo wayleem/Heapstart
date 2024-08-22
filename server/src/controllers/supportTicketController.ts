@@ -57,13 +57,23 @@ export const getSupportTicket = async (req: Request, res: Response) => {
 export const updateSupportTicket = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
-		const updateData = req.body as UpdateSupportTicketDTO;
-		const updatedTicket = await SupportTicket.findByIdAndUpdate(id, updateData, { new: true });
+		const { status, adminResponse } = req.body;
+		const updatedTicket = await SupportTicket.findByIdAndUpdate(id, { status, adminResponse }, { new: true });
 		if (!updatedTicket) {
 			return res.status(404).json({ message: "Ticket not found" });
 		}
 		res.json(updatedTicket);
 	} catch (error) {
 		res.status(500).json({ message: "Error updating support ticket", error });
+	}
+};
+
+export const getAllSupportTickets = async (req: Request, res: Response) => {
+	try {
+		const tickets = await SupportTicket.find().sort({ createdAt: -1 });
+		res.json(tickets);
+	} catch (error) {
+		console.error("Error fetching support tickets:", error);
+		res.status(500).json({ message: "Error fetching support tickets", error: (error as Error).message });
 	}
 };
