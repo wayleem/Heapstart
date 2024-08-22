@@ -1,3 +1,5 @@
+// File: src/components/tables/SupportTicketList.tsx
+
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@store/index";
 import { fetchAllSupportTickets, updateSupportTicket } from "@store/thunks/supportTicketThunks";
@@ -7,16 +9,14 @@ const SupportTicketList: React.FC = () => {
 	const dispatch = useAppDispatch();
 	const tickets = useAppSelector((state: RootState) => state.supportTicket.tickets);
 	const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
-	const [response, setResponse] = useState("");
 
 	useEffect(() => {
 		dispatch(fetchAllSupportTickets());
 	}, [dispatch]);
 
-	const handleUpdateTicket = async (id: string, status: string) => {
-		await dispatch(updateSupportTicket({ id, status, adminResponse: response }));
+	const handleUpdateStatus = async (id: string, status: string) => {
+		await dispatch(updateSupportTicket({ id, status }));
 		setSelectedTicket(null);
-		setResponse("");
 	};
 
 	return (
@@ -42,7 +42,7 @@ const SupportTicketList: React.FC = () => {
 									onClick={() => setSelectedTicket(ticket)}
 									className="bg-blue-500 text-white px-2 py-1 rounded"
 								>
-									View
+									Update Status
 								</button>
 							</td>
 						</tr>
@@ -55,30 +55,36 @@ const SupportTicketList: React.FC = () => {
 					<div className="bg-white p-4 rounded-lg w-1/2">
 						<h2 className="text-xl font-bold mb-2">{selectedTicket.subject}</h2>
 						<p className="mb-4">{selectedTicket.description}</p>
-						<textarea
-							className="w-full p-2 border rounded mb-4"
-							value={response}
-							onChange={(e) => setResponse(e.target.value)}
-							placeholder="Enter your response..."
-						/>
 						<div className="flex justify-end">
 							<button
-								onClick={() => handleUpdateTicket(selectedTicket._id, "resolved")}
-								className="bg-green-500 text-white px-4 py-2 rounded mr-2"
+								onClick={() => handleUpdateStatus(selectedTicket._id, "open")}
+								className="bg-yellow-500 text-white px-4 py-2 rounded mr-2"
 							>
-								Resolve
+								Open
 							</button>
 							<button
-								onClick={() => handleUpdateTicket(selectedTicket._id, "in-progress")}
-								className="bg-yellow-500 text-white px-4 py-2 rounded mr-2"
+								onClick={() => handleUpdateStatus(selectedTicket._id, "in-progress")}
+								className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
 							>
 								In Progress
 							</button>
 							<button
-								onClick={() => setSelectedTicket(null)}
-								className="bg-red-500 text-white px-4 py-2 rounded"
+								onClick={() => handleUpdateStatus(selectedTicket._id, "resolved")}
+								className="bg-green-500 text-white px-4 py-2 rounded mr-2"
 							>
-								Close
+								Resolved
+							</button>
+							<button
+								onClick={() => handleUpdateStatus(selectedTicket._id, "closed")}
+								className="bg-red-500 text-white px-4 py-2 rounded mr-2"
+							>
+								Closed
+							</button>
+							<button
+								onClick={() => setSelectedTicket(null)}
+								className="bg-gray-500 text-white px-4 py-2 rounded"
+							>
+								Cancel
 							</button>
 						</div>
 					</div>

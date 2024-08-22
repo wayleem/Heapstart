@@ -5,6 +5,7 @@ import {
 	updateSupportTicket,
 	getSupportTicket,
 	getAllSupportTickets,
+	deleteSupportTicket,
 } from "../controllers/supportTicketController";
 import { authenticateAdmin, authenticateJWT } from "../middleware/auth";
 
@@ -15,5 +16,6 @@ router.post("/", authenticateJWT, createSupportTicket);
 router.get("/user", authenticateJWT, getUserSupportTickets);
 router.get("/:id", authenticateJWT, getSupportTicket);
 router.put("/:id", authenticateJWT, updateSupportTicket);
+router.delete("/:id", authenticateJWT, deleteSupportTicket);
 
 export { router as supportTicketRouter };

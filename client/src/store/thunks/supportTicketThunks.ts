@@ -32,3 +32,16 @@ export const createSupportTicket = createAsyncThunk<SupportTicket, CreateSupport
 		}
 	},
 );
+
+export const deleteSupportTicket = createAsyncThunk("supportTickets/delete", async (id: string, { dispatch }) => {
+	try {
+		dispatch(setStatus("loading"));
+		await supportTicketApi.deleteSupportTicket(id);
+		dispatch(removeTicket(id));
+		dispatch(setStatus("succeeded"));
+	} catch (error) {
+		dispatch(setError(error instanceof Error ? error.message : "An unknown error occurred"));
+		dispatch(setStatus("failed"));
+		throw error;
+	}
+});

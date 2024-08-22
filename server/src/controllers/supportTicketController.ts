@@ -77,3 +77,27 @@ export const getAllSupportTickets = async (req: Request, res: Response) => {
 		res.status(500).json({ message: "Error fetching support tickets", error: (error as Error).message });
 	}
 };
+
+export const deleteSupportTicket = async (req: Request, res: Response) => {
+	try {
+		const { id } = req.params;
+		const userId = req.userId;
+
+		const ticket = await SupportTicket.findOne({ _id: id, userId });
+
+		if (!ticket) {
+			return res.status(404).json({ message: "Ticket not found or you don't have permission to delete it" });
+		}
+
+		await SupportTicket.deleteOne({ _id: id });
+
+		// Remove the ticket from the user's supportTickets array
+		await User.findByIdAndUpdate(userId, {
+			$pull: { supportTickets: id },
+		});
+
+		res.json({ message: "Support ticket deleted successfully" });
+	} catch (error) {
+		res.status(500).json({ message: "Error deleting support ticket", error });
+	}
+};

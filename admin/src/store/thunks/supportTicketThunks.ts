@@ -17,10 +17,10 @@ export const fetchAllSupportTickets = createAsyncThunk("supportTickets/fetchAll"
 
 export const updateSupportTicket = createAsyncThunk(
 	"supportTickets/update",
-	async ({ id, status, adminResponse }: { id: string; status: string; adminResponse: string }, { dispatch }) => {
+	async ({ id, status }: { id: string; status: string }, { dispatch }) => {
 		try {
 			dispatch(setStatus("loading"));
-			const updatedTicket = await supportTicketApi.updateSupportTicket(id, { status, adminResponse });
+			const updatedTicket = await supportTicketApi.updateSupportTicket(id, { status });
 			dispatch(updateTicket(updatedTicket));
 			dispatch(setStatus("succeeded"));
 		} catch (error) {

@@ -4,7 +4,6 @@ export interface SupportTicket {
 	subject: string;
 	description: string;
 	status: "open" | "in-progress" | "resolved" | "closed";
-	adminResponse?: string;
 	createdAt: string;
 	updatedAt: string;
 }

@@ -53,6 +53,7 @@ export const supportTicketApi = {
 		apiClient.post("/api/support-tickets", supportTicketData),
 	getUserSupportTickets: () => apiClient.get<SupportTicket[]>("/api/support-tickets/user"),
 	getSupportTicket: (id: string) => apiClient.get<SupportTicket>(`/api/support-tickets/${id}`),
+	deleteSupportTicket: (id: string) => apiClient.delete<void>(`/api/support-tickets/${id}`),
 };
 
 export const paymentApi = {

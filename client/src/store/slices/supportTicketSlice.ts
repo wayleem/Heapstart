@@ -23,9 +23,12 @@ const supportTicketSlice = createSlice({
 		setError: (state, action: PayloadAction<string | null>) => {
 			state.error = action.payload;
 		},
+		removeTicket: (state, action: PayloadAction<string>) => {
+			state.tickets = state.tickets.filter((ticket) => ticket._id !== action.payload);
+		},
 	},
 });
 
-export const { setTickets, addTicket, setStatus, setError } = supportTicketSlice.actions;
+export const { setTickets, addTicket, setStatus, setError, removeTicket } = supportTicketSlice.actions;
 
 export default supportTicketSlice.reducer;
