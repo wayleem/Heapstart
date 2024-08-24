@@ -18,6 +18,7 @@ import {
 	CartItems,
 	CreateOrderRequest,
 	CreateSupportTicketRequest,
+	ValidatePromoCodeResponse,
 } from "@types";
 
 export const authApi = {
@@ -59,4 +60,9 @@ export const supportTicketApi = {
 export const paymentApi = {
 	createPaymentIntent: (data: CreatePaymentIntentRequest) =>
 		apiClient.post<CreatePaymentIntentResponse>("/api/payment/create-payment-intent", data),
+};
+
+export const promoCodeApi = {
+	validatePromoCode: (code: string) =>
+		apiClient.post<ValidatePromoCodeResponse>("/api/promo-codes/validate", { code }),
 };

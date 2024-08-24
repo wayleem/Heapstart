@@ -9,10 +9,13 @@ export const createOrder = createAsyncThunk<Order, CreateOrderRequest>(
 	async (orderData, { dispatch }) => {
 		try {
 			dispatch(setOrderStatus("loading"));
-			const newOrder = await orderApi.createOrder(orderData);
+			const newOrder = await orderApi.createOrder({
+				...orderData,
+				appliedDiscount: orderData.appliedDiscount || 0,
+			});
 			dispatch(addOrder(newOrder));
 			dispatch(setOrderStatus("succeeded"));
-			return newOrder; // Return the new order
+			return newOrder;
 		} catch (err) {
 			const errorMessage = handleApiError(err);
 			dispatch(setOrderError(errorMessage));

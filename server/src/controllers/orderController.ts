@@ -9,7 +9,7 @@ export const createOrder = async (req: Request, res: Response) => {
 	session.startTransaction();
 
 	try {
-		const { products, shippingAddress, paymentInfo, orderTotal } = req.body;
+		const { products, shippingAddress, paymentInfo, orderTotal, appliedDiscount } = req.body;
 		const userId = req.userId;
 
 		// Fetch product details for each product in the order
@@ -33,6 +33,7 @@ export const createOrder = async (req: Request, res: Response) => {
 			shippingAddress,
 			paymentInfo,
 			orderTotal,
+			appliedDiscount,
 			status: "processing",
 		});
 

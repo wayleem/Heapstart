@@ -7,7 +7,7 @@ export interface TrackingInfo {
 	trackingLink?: string;
 }
 
-export interface CreateOrderData {
+export interface CreateOrderRequest {
 	products: Array<{
 		productId: string;
 		quantity: number;
@@ -18,6 +18,8 @@ export interface CreateOrderData {
 		paymentMethodId: string;
 	};
 	orderTotal: number;
+	promoCode?: string;
+	appliedDiscount: number;
 }
 
 export interface Order {

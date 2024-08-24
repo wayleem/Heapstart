@@ -24,6 +24,7 @@ export interface IOrder extends Document {
 		trackingNumber: string;
 		trackingLink?: string;
 	}>;
+	appliedDiscount: number;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -59,6 +60,7 @@ const OrderSchema = new Schema<IOrder>(
 				trackingLink: { type: String },
 			},
 		],
+		appliedDiscount: { type: Number, default: 0 },
 	},
 	{ timestamps: true },
 );

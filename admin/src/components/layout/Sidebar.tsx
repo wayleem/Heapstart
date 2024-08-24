@@ -1,6 +1,13 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { HomeIcon, CubeIcon, ShoppingCartIcon, UsersIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import {
+	HomeIcon,
+	CubeIcon,
+	ShoppingCartIcon,
+	UsersIcon,
+	QuestionMarkCircleIcon,
+	TagIcon,
+} from "@heroicons/react/24/outline";
 
 const Sidebar = () => {
 	const location = useLocation();
@@ -48,6 +55,9 @@ const Sidebar = () => {
 				</NavItem>
 				<NavItem to="/support-tickets" icon={QuestionMarkCircleIcon}>
 					Support Tickets
+				</NavItem>
+				<NavItem to="/promo-codes" icon={TagIcon}>
+					Promo Codes
 				</NavItem>
 			</nav>
 		</div>

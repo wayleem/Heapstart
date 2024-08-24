@@ -5,3 +5,4 @@ export * from "./order";
 export * from "./common";
 export * from "./auth";
 export * from "./supportTicket";
+export * from "./promo";

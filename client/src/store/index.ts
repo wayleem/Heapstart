@@ -7,6 +7,7 @@ import userReducer from "./slices/userSlice";
 import productReducer from "./slices/productSlice";
 import orderReducer from "./slices/orderSlice";
 import supportTicketReducer from "./slices/supportTicketSlice";
+import promoCodeReducer from "./slices/promoCodeSlice";
 import { RootState } from "@types";
 
 const rootReducer = combineReducers({
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
 	product: productReducer,
 	orders: orderReducer,
 	supportTickets: supportTicketReducer,
+	promoCodes: promoCodeReducer,
 });
 
 const persistConfig: PersistConfig<RootState> = {

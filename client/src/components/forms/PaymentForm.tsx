@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from "react";
+// src/components/forms/PaymentForm.tsx
+
+import React, { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { clearCart, selectCartItems } from "@store/slices/cartSlice";
 import { useAppSelector, useAppDispatch } from "@store/index";
-import { paymentApi } from "@api/endpoints";
 import { useNavigate } from "react-router-dom";
 import { setCurrentOrder } from "@store/slices/orderSlice";
 import { AxiosError } from "axios";
 import { selectAllProducts } from "@store/slices/productSlice";
 import { createOrder } from "@store/thunks/orderThunks";
 import { Address, CreateOrderRequest, Product } from "@types";
+import { validatePromoCode } from "@store/thunks/promoCodeThunks";
+import { clearPromoCode } from "@store/slices/promoCodeSlice";
+import { usePayment } from "@hooks/payment/usePayment";
 
 interface PaymentFormProps {
 	total: number;
@@ -18,37 +22,34 @@ interface PaymentFormProps {
 const PaymentForm: React.FC<PaymentFormProps> = ({ total, shippingInfo }) => {
 	const stripe = useStripe();
 	const elements = useElements();
-	const [clientSecret, setClientSecret] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [processing, setProcessing] = useState(false);
 	const cartItems = useAppSelector(selectCartItems);
 	const products = useAppSelector(selectAllProducts);
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
+	const [promoCodeInput, setPromoCodeInput] = useState("");
 
-	useEffect(() => {
-		const fetchPaymentIntent = async () => {
-			try {
-				const cartItemsArray = Object.entries(cartItems).map(([productId, quantity]) => ({
-					productId,
-					quantity,
-				}));
+	const { code, discountType, discountValue, error: promoError } = useAppSelector((state) => state.promoCodes);
 
-				if (cartItemsArray.length === 0) {
-					setError("Your cart is empty. Please add items before proceeding to checkout.");
-					return;
-				}
+	const { clientSecret, error: paymentError } = usePayment();
 
-				const response = await paymentApi.createPaymentIntent({ items: cartItemsArray });
-				setClientSecret(response.clientSecret);
-			} catch (error) {
-				setError("Failed to initialize payment. Please try again.");
-				console.error("Error fetching payment intent:", error);
-			}
-		};
+	const calculateDiscount = () => {
+		if (!code || !discountType || !discountValue) return 0;
+		return discountType === "percentage" ? total * (discountValue / 100) : Math.min(discountValue, total);
+	};
 
-		fetchPaymentIntent();
-	}, [cartItems]);
+	const discountAmount = calculateDiscount();
+	const finalTotal = total - discountAmount;
+
+	const handleApplyPromoCode = () => {
+		dispatch(validatePromoCode(promoCodeInput));
+	};
+
+	const handleRemovePromoCode = () => {
+		dispatch(clearPromoCode());
+		setPromoCodeInput("");
+	};
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
@@ -95,7 +96,9 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ total, shippingInfo }) => {
 				}),
 				shippingAddress: shippingInfo,
 				paymentInfo: { paymentMethodId: paymentIntentId },
-				orderTotal: total,
+				orderTotal: finalTotal,
+				promoCode: code || undefined,
+				appliedDiscount: discountAmount,
 			};
 			console.log("Sending order data:", orderData);
 			const response = await dispatch(createOrder(orderData)).unwrap();
@@ -125,16 +128,51 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ total, shippingInfo }) => {
 		<form onSubmit={handleSubmit} className="space-y-4">
 			<div className="mb-4">
 				<h2 className="text-xl font-semibold mb-2">Payment Details</h2>
-				<p className="text-gray-600">Total to pay: ${total.toFixed(2)}</p>
+				<p className="text-gray-600">Total to pay: ${finalTotal.toFixed(2)}</p>
 			</div>
 			<CardElement />
-			{error && <div className="text-red-500">{error}</div>}
+
+			<div className="mt-4">
+				<h3 className="text-lg font-semibold mb-2">Promo Code</h3>
+				{code ? (
+					<div>
+						<p className="text-green-600">Promo code applied: {code}</p>
+						<button
+							type="button"
+							onClick={handleRemovePromoCode}
+							className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+						>
+							Remove Promo Code
+						</button>
+					</div>
+				) : (
+					<div className="flex items-center">
+						<input
+							type="text"
+							value={promoCodeInput}
+							onChange={(e) => setPromoCodeInput(e.target.value)}
+							placeholder="Enter promo code"
+							className="border p-2 mr-2 flex-grow"
+						/>
+						<button
+							type="button"
+							onClick={handleApplyPromoCode}
+							className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+						>
+							Apply
+						</button>
+					</div>
+				)}
+				{promoError && <p className="text-red-500 mt-2">{promoError}</p>}
+			</div>
+
+			{(error || paymentError) && <div className="text-red-500">{error || paymentError}</div>}
 			<button
 				type="submit"
 				disabled={!stripe || processing || !clientSecret}
-				className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+				className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
 			>
-				{processing ? "Processing..." : `Pay $${total.toFixed(2)}`}
+				{processing ? "Processing..." : `Pay $${finalTotal.toFixed(2)}`}
 			</button>
 		</form>
 	);

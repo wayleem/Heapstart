@@ -7,6 +7,8 @@ import Login from "@pages/auth/Login";
 import ProductList from "@components/tables/ProductList";
 import OrderManagement from "@pages/orders/OrderManagement";
 import SupportTicketManagement from "@pages/support/SupportTicketManagement";
+import PromoCodeManagement from "@pages/promo/PromoCodeManagement";
+import ProductForm from "@components/forms/ProductForm";
 
 const App: React.FC = () => {
 	const isAuthenticated = useSelector((state: RootState) => state.admin.isAuthenticated);
@@ -40,6 +42,30 @@ const App: React.FC = () => {
 					}
 				/>
 				<Route
+					path="/add"
+					element={
+						isAuthenticated ? (
+							<Layout>
+								<ProductForm />
+							</Layout>
+						) : (
+							<Navigate to="/login" />
+						)
+					}
+				/>
+				<Route
+					path="/edit/:id"
+					element={
+						isAuthenticated ? (
+							<Layout>
+								<ProductForm />
+							</Layout>
+						) : (
+							<Navigate to="/login" />
+						)
+					}
+				/>
+				<Route
 					path="/orders"
 					element={
 						isAuthenticated ? (
@@ -57,6 +83,18 @@ const App: React.FC = () => {
 						isAuthenticated ? (
 							<Layout>
 								<SupportTicketManagement />
+							</Layout>
+						) : (
+							<Navigate to="/login" />
+						)
+					}
+				/>
+				<Route
+					path="/promo-codes"
+					element={
+						isAuthenticated ? (
+							<Layout>
+								<PromoCodeManagement />
 							</Layout>
 						) : (
 							<Navigate to="/login" />

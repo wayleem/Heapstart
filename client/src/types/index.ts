@@ -7,3 +7,4 @@ export * from "./store";
 export * from "./auth";
 export * from "./supportTicket";
 export * from "./api";
+export * from "./promo";

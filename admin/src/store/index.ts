@@ -15,6 +15,7 @@ import adminReducer from "./slices/adminSlice";
 import productReducer from "./slices/productSlice";
 import orderReducer from "./slices/orderSlice";
 import supportTicketReducer from "./slices/supportTicketSlice";
+import promoCodeReducer from "./slices/promoCodeSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { RootState } from "@types";
 
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
 	product: productReducer,
 	order: orderReducer,
 	supportTicket: supportTicketReducer,
+	promoCode: promoCodeReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
