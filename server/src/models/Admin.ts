@@ -1,6 +1,4 @@
-// models/Admin.ts
-
-import { Schema, model, Model, Document } from "mongoose";
+import { Schema, model, Document, Model } from "mongoose";
 import bcrypt from "bcrypt";
 
 export interface IAdmin extends Document {

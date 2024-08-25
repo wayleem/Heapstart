@@ -1,11 +1,10 @@
-import { Schema, model, Model, Document, Types } from "mongoose";
+import { Schema, model, Document, Model } from "mongoose";
 
 export interface ISupportTicket extends Document {
-	userId: Types.ObjectId;
-	orderId: Types.ObjectId;
+	userId: Schema.Types.ObjectId;
 	subject: string;
-	description: string;
-	status: "open" | "in-progress" | "resolved" | "closed";
+	message: string;
+	status: "open" | "closed" | "pending";
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -13,14 +12,12 @@ export interface ISupportTicket extends Document {
 const SupportTicketSchema = new Schema<ISupportTicket>(
 	{
 		userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-		orderId: { type: Schema.Types.ObjectId, ref: "Order", required: true },
-		subject: { type: String, required: true },
-		description: { type: String, required: true },
-		status: { type: String, enum: ["open", "in-progress", "resolved", "closed"], default: "open" },
+		subject: { type: String, required: true, trim: true },
+		message: { type: String, required: true, trim: true },
+		status: { type: String, enum: ["open", "closed", "pending"], default: "open" },
 	},
 	{ timestamps: true },
 );
 
 const SupportTicket: Model<ISupportTicket> = model<ISupportTicket>("SupportTicket", SupportTicketSchema);
-
 export default SupportTicket;

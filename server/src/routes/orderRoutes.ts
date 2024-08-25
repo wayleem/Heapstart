@@ -1,28 +1,19 @@
-/*
- * TODO
- */
-
 import express from "express";
-import {
-	createOrder,
-	getOrder,
-	updateOrderStatus,
-	getUserOrders,
-	getAllOrders,
-	updateOrderTracking,
-} from "../controllers/orderController";
+import { orderController } from "../controllers";
 import { authenticateAdmin, authenticateJWT } from "../middleware/auth";
 
 const router = express.Router();
 
-router.post("/", authenticateJWT, createOrder);
-router.get("/", authenticateAdmin, getAllOrders);
-router.get("/user", authenticateJWT, getUserOrders);
-router.get("/:id", authenticateJWT, getOrder);
+// Admin routes to list all orders
+router.get("/", authenticateAdmin, orderController.list);
 
-// Admin only routes
+// Authenticated users can create orders
+router.post("/", authenticateJWT, orderController.add);
 
-router.put("/:id/status", authenticateAdmin, updateOrderStatus);
-router.put("/:id/tracking", authenticateAdmin, updateOrderTracking);
+// Authenticated users can view their own orders by ID
+router.get("/:id", authenticateJWT, orderController.get);
+
+// Admin can update the status of any order
+router.put("/:id", authenticateAdmin, orderController.update);
 
 export { router as orderRouter };

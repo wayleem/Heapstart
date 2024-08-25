@@ -1,18 +1,22 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { UserErrors } from "../utils/errors";
+import { CommonErrors, createErrorResponse, UserErrors } from "../utils/errors";
+import logger from "../utils/logger";
+import { verifyToken } from "../utils/jwUtils";
 
 export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
 	const token = req.header("Authorization")?.split(" ")[1];
 	if (!token) {
-		return res.status(401).json({ type: UserErrors.UNAUTHORIZED, message: "No token provided" });
+		logger.warn("Authentication failed: No token provided");
+		return next(createErrorResponse(CommonErrors.UNAUTHORIZED, "No token provided", 401));
 	}
 	try {
-		const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
+		const decoded = verifyToken(token);
 		req.userId = decoded.id;
 		next();
 	} catch (error) {
-		return res.status(401).json({ type: UserErrors.UNAUTHORIZED, message: "Invalid token" });
+		logger.warn("Authentication failed: Invalid token", { error });
+		next(createErrorResponse(CommonErrors.UNAUTHORIZED, "Invalid token", 401));
 	}
 };
 

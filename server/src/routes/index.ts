@@ -7,8 +7,8 @@ import { adminRouter } from "./adminRoutes";
 import { productRouter } from "./productRoutes";
 import { orderRouter } from "./orderRoutes";
 import { paymentRouter } from "./paymentRoutes";
-import { supportTicketRouter } from "./supportTicketRoutes";
-import { promoCodeRouter } from "./promoCodeRoutes";
+import { ticketRouter } from "./ticketRoutes";
+import { promoRouter } from "./promoRoutes";
 
 const router = Router();
 
@@ -18,7 +18,7 @@ router.use("/admin", adminRouter);
 router.use("/products", productRouter);
 router.use("/orders", orderRouter);
 router.use("/payment", paymentRouter);
-router.use("/support-tickets", supportTicketRouter);
-router.use("/promo-codes", promoCodeRouter);
+router.use("/support-tickets", ticketRouter);
+router.use("/promo-codes", promoRouter);
 
 export default router;

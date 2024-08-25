@@ -1,93 +1,66 @@
-import { Request, Response } from "express";
-import Product, { IProduct } from "../models/Product";
-import { ProductErrors } from "../utils/errors";
+import { Request, Response, NextFunction } from "express";
+import Product from "../models/Product";
+import { createCrudController } from "./crudController";
+import { createErrorResponse, ProductErrors } from "../utils/errors";
+import logger from "../utils/logger";
 import { uploadImage } from "../utils/imageUpload";
 
-export const getAllProducts = async (req: Request, res: Response) => {
-	try {
-		const products = await Product.find({ isActive: true });
-		res.json(products);
-	} catch (error) {
-		console.error("Error fetching products:", error);
-		res.status(500).json({ type: ProductErrors.SERVER_ERROR, message: "Failed to fetch products" });
-	}
-};
+const productCrud = createCrudController(Product);
 
-export const getProduct = async (req: Request, res: Response) => {
-	try {
-		const product = await Product.findById(req.params.id);
-		if (!product || !product.isActive) {
-			return res.status(404).json({ type: ProductErrors.PRODUCT_NOT_FOUND, message: "Product not found" });
+export const productController = {
+	...productCrud,
+
+	add: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const productData = req.body;
+			if (req.files && Array.isArray(req.files)) {
+				const imageUrls = await Promise.all(req.files.map((file) => uploadImage(file)));
+				productData.images = imageUrls;
+			}
+			const newProduct = new Product(productData);
+			await newProduct.save();
+			logger.info("Product created successfully", { productId: newProduct._id });
+			res.status(201).json(newProduct);
+		} catch (error) {
+			logger.error("Error creating product", { error });
+			next(createErrorResponse(ProductErrors.PRODUCT_CREATION_ERROR, "Error creating product", 400, error));
 		}
-		res.json(product);
-	} catch (error) {
-		console.error("Error fetching product:", error);
-		res.status(500).json({ type: ProductErrors.SERVER_ERROR, message: "Failed to fetch product" });
-	}
-};
+	},
 
-export const createProduct = async (req: Request, res: Response) => {
-	try {
-		const productData: Partial<IProduct> = req.body;
-
-		if (req.files && Array.isArray(req.files)) {
-			const imageUrls = await Promise.all((req.files as Express.Multer.File[]).map((file) => uploadImage(file)));
-			productData.images = imageUrls;
+	update: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params;
+			const updateData = req.body;
+			if (req.files && Array.isArray(req.files)) {
+				const newImageUrls = await Promise.all(req.files.map((file) => uploadImage(file)));
+				updateData.images = [...(updateData.images || []), ...newImageUrls];
+			}
+			const product = await Product.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+			if (!product) {
+				logger.warn("Product not found for update", { productId: id });
+				return next(createErrorResponse(ProductErrors.PRODUCT_NOT_FOUND, "Product not found", 404));
+			}
+			logger.info("Product updated successfully", { productId: id });
+			res.json(product);
+		} catch (error) {
+			logger.error("Error updating product", { error, productId: req.params.id });
+			next(createErrorResponse(ProductErrors.PRODUCT_UPDATE_ERROR, "Error updating product", 400, error));
 		}
+	},
 
-		const product = new Product(productData);
-		await product.save();
-		res.status(201).json(product);
-	} catch (error) {
-		console.error("Product creation error:", error);
-		res.status(400).json({ type: ProductErrors.PRODUCT_CREATION_ERROR, message: "Failed to create product" });
-	}
-};
-
-export const updateProduct = async (req: Request, res: Response) => {
-	try {
-		const productData: Partial<IProduct> = req.body;
-		const newImages = req.files as Express.Multer.File[];
-		const existingImages = JSON.parse(req.body.existingImages || "[]");
-
-		let updatedImages = [...existingImages];
-
-		if (newImages && newImages.length > 0) {
-			const newImageUrls = await Promise.all(newImages.map((file) => uploadImage(file)));
-			updatedImages = [...updatedImages, ...newImageUrls];
+	deactivate: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params;
+			const product = await Product.findByIdAndUpdate(id, { isActive: false }, { new: true });
+			if (!product) {
+				logger.warn("Product not found for deactivation", { productId: id });
+				return next(createErrorResponse(ProductErrors.PRODUCT_NOT_FOUND, "Product not found", 404));
+			}
+			logger.info("Product deactivated successfully", { productId: id });
+			res.json(product);
+		} catch (error) {
+			logger.error("Error deactivating product", { error, productId: req.params.id });
+			next(createErrorResponse(ProductErrors.PRODUCT_UPDATE_ERROR, "Error deactivating product", 400, error));
 		}
-
-		productData.images = updatedImages;
-
-		const product = await Product.findByIdAndUpdate(req.params.id, productData, {
-			new: true,
-			runValidators: true,
-		});
-
-		if (!product) {
-			return res.status(404).json({ type: ProductErrors.PRODUCT_NOT_FOUND, message: "Product not found" });
-		}
-
-		res.json(product);
-	} catch (error) {
-		console.error("Product update error:", error);
-		res.status(500).json({
-			type: ProductErrors.PRODUCT_UPDATE_ERROR,
-			message: "Failed to update product",
-			error: error.message,
-		});
-	}
-};
-
-export const deactivateProduct = async (req: Request, res: Response) => {
-	try {
-		const product = await Product.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
-		if (!product) {
-			return res.status(404).json({ type: ProductErrors.PRODUCT_NOT_FOUND, message: "Product not found" });
-		}
-		res.json(product);
-	} catch (error) {
-		console.error("Product deactivation error:", error);
-		res.status(400).json({ type: ProductErrors.PRODUCT_DELETION_ERROR, message: "Failed to deactivate product" });
-	}
+	},
 };

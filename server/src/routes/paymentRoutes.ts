@@ -1,10 +1,10 @@
 import express from "express";
-import { createPaymentIntent, processPayment } from "../controllers/paymentController";
+import { paymentController } from "../controllers";
 import { authenticateJWT } from "../middleware/auth";
 
 const router = express.Router();
 
-router.post("/", authenticateJWT, processPayment);
-router.post("/create-payment-intent", createPaymentIntent);
+router.post("/", authenticateJWT, paymentController.processPayment);
+router.post("/create-intent", paymentController.createPaymentIntent);
 
 export { router as paymentRouter };

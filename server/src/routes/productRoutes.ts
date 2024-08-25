@@ -1,32 +1,27 @@
 import express from "express";
 import multer from "multer";
 import path from "path";
-import {
-	createProduct,
-	updateProduct,
-	getAllProducts,
-	getProduct,
-	deactivateProduct,
-} from "../controllers/productController";
+import { productController } from "../controllers";
 import { authenticateAdmin } from "../middleware/auth";
 
 const router = express.Router();
 
 const storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-		cb(null, "uploads/"); // Ensure this directory exists
-	},
-	filename: function (req, file, cb) {
-		cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
-	},
+	destination: (req, file, cb) => cb(null, "uploads/"),
+	filename: (req, file, cb) => cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname)),
 });
 
 const upload = multer({ storage: storage });
 
-router.post("/", authenticateAdmin, upload.array("newImages", 5), createProduct);
-router.put("/:id", authenticateAdmin, upload.array("newImages", 5), updateProduct);
-router.get("/", getAllProducts);
-router.get("/:id", getProduct);
-router.delete("/:id", authenticateAdmin, deactivateProduct);
+// Admin routes to add and update products
+router.post("/", authenticateAdmin, upload.array("newImages", 5), productController.add);
+router.put("/:id", authenticateAdmin, upload.array("newImages", 5), productController.update);
+
+// Routes to list and get products
+router.get("/", productController.list);
+router.get("/:id", productController.get);
+
+// Admin route to deactivate a product
+router.delete("/:id", authenticateAdmin, productController.deactivate);
 
 export { router as productRouter };

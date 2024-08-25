@@ -1,6 +1,4 @@
-// src/models/PromoCode.ts
-
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Model } from "mongoose";
 
 export interface IPromoCode extends Document {
 	code: string;
@@ -27,6 +25,5 @@ const PromoCodeSchema = new Schema<IPromoCode>(
 	{ timestamps: true },
 );
 
-const PromoCode = model<IPromoCode>("PromoCode", PromoCodeSchema);
-
+const PromoCode: Model<IPromoCode> = model<IPromoCode>("PromoCode", PromoCodeSchema);
 export default PromoCode;
